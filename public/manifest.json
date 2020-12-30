@@ -1,0 +1,19 @@
+{
+  "name": "Forbole Portal",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "Forbole Portal Chrome Extension",
+  "icons": {
+    "512": "logo512.png"
+  },
+  "browser_action": {
+    "default_icon": "logo512.png",
+    "default_popup": "index.html"
+  },
+  "externally_connectable": {
+    "matches": ["*://localhost/*"]
+  },
+  "background": {
+    "scripts": ["background/index.js"]
+  }
+}
