@@ -9,3 +9,8 @@ This is a very simple PoC to show how to create chrome extensions in React, and 
 3. Click "Load Unpacked" and select the `build` folder
 4. The extension will then be added to chrome. Pin the extension to chrome toolbar and click on it to see the UI
 5. Run `yarn start` to start the app on web and it will trigger the extension to show a popup
+
+# TODO
+
+1. Rewire `create-react-app`'s webpack config to pack `background.js`
+2. Configure hot reloading (https://mmazzarolo.medium.com/developing-a-browser-extension-with-create-react-app-b0dcd3b32b3f)[https://mmazzarolo.medium.com/developing-a-browser-extension-with-create-react-app-b0dcd3b32b3f]
