@@ -14,6 +14,7 @@
     "matches": ["*://localhost/*"]
   },
   "background": {
-    "scripts": ["background/index.js"]
-  }
+    "scripts": ["background.js"]
+  },
+  "permissions": ["storage"]
 }
