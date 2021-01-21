@@ -1,14 +1,12 @@
 import React from "react";
 
 function App() {
-  React.useEffect(() => {
-    chrome.runtime.sendMessage("hhklieoefpolodfechjdmjjdnnmhidge", {
-      key: "val",
-    });
+  const clearStorage = React.useCallback(() => {
+    chrome.storage.local.clear();
   }, []);
   return (
     <div className="App">
-      <h1>Home</h1>
+      <button onClick={clearStorage}>Clear Storage</button>
     </div>
   );
 }

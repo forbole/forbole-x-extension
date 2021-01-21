@@ -45,9 +45,17 @@ chrome.runtime.onMessageExternal.addListener(function (
     case "addWallet":
       chrome.storage.local.get(["wallets"], (result) => {
         const { password, wallet } = request.data;
+        const walletToBeSaved = {
+          name: wallet.name,
+          pubkey: wallet.pubkey,
+          mnemonic: CryptoJS.AES.encrypt(
+            wallet.mnemonic,
+            wallet.securityPassword
+          ).toString(),
+        };
         const wallets = decryptWallets(result.wallets, password);
         const encryptedWalletsString = CryptoJS.AES.encrypt(
-          JSON.stringify([wallet, ...(wallets || [])]),
+          JSON.stringify([walletToBeSaved, ...(wallets || [])]),
           password
         ).toString();
         chrome.storage.local.set(
