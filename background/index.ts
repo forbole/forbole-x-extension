@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import { Wallet } from "../types";
 
 const decryptWallets = (encryptedWalletsString: string, password: string) => {
   try {
@@ -34,9 +35,10 @@ chrome.runtime.onMessageExternal.addListener(function (
           !wallets
             ? { err: "incorrect password" }
             : {
-                wallets: (wallets || []).map((w: any) => ({
+                wallets: (wallets || []).map((w: Wallet) => ({
                   name: w.name,
-                  pubkey: w.pubkey,
+                  id: w.id,
+                  cryptos: w.cryptos,
                 })),
               }
         );
@@ -47,11 +49,12 @@ chrome.runtime.onMessageExternal.addListener(function (
         const { password, wallet } = request.data;
         const walletToBeSaved = {
           name: wallet.name,
-          pubkey: wallet.pubkey,
+          cryptos: wallet.cryptos,
           mnemonic: CryptoJS.AES.encrypt(
             wallet.mnemonic,
             wallet.securityPassword
           ).toString(),
+          id: CryptoJS.SHA256(wallet.mnemonic).toString(),
         };
         const wallets = decryptWallets(result.wallets, password);
         const encryptedWalletsString = CryptoJS.AES.encrypt(
@@ -61,7 +64,13 @@ chrome.runtime.onMessageExternal.addListener(function (
         chrome.storage.local.set(
           { wallets: encryptedWalletsString },
           function () {
-            sendResponse({ success: true });
+            sendResponse({
+              wallet: {
+                name: walletToBeSaved.name,
+                id: walletToBeSaved.id,
+                cryptos: walletToBeSaved.cryptos,
+              },
+            });
           }
         );
       });
