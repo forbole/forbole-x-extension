@@ -14,7 +14,9 @@
     "build-background": "webpack --config webpack.config.js",
     "build": "INLINE_RUNTIME_CHUNK=false react-scripts build && yarn build-background",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --config .prettierrc --write '**/*.{ts,tsx,json,yaml}'",
+    "lint": "eslint '**/*.{ts,tsx}'"
   },
   "eslintConfig": {
     "extends": [
@@ -43,6 +45,21 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
+    "@typescript-eslint/eslint-plugin": "^4.11.1",
+    "@typescript-eslint/parser": "^4.11.1",
+    "eslint": "^7.17.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "jest-chrome": "^0.7.0",
+    "jest-dom": "^4.0.0",
+    "prettier": "^2.2.1",
+    "react-test-renderer": "^17.0.1",
     "ts-loader": "^8.0.14",
     "typescript": "^4.0.3",
     "webpack-cli": "^4.4.0"

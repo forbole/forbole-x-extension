@@ -1,14 +1,16 @@
-import React from "react";
+import React from 'react'
 
 function App() {
   const clearStorage = React.useCallback(() => {
-    chrome.storage.local.clear();
-  }, []);
+    chrome.storage.local.clear()
+  }, [])
   return (
     <div className="App">
-      <button onClick={clearStorage}>Clear Storage</button>
+      <button type="button" onClick={clearStorage}>
+        Clear Storage
+      </button>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
