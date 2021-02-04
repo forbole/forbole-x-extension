@@ -11,7 +11,7 @@
     "default_popup": "index.html"
   },
   "externally_connectable": {
-    "matches": ["*://localhost/*"]
+    "matches": ["*://localhost/*", "*://*.forbole.com/*"]
   },
   "background": {
     "scripts": ["background.js"]
