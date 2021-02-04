@@ -1,0 +1,27 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Install modules
+        run: yarn
+      - name: Run build
+        run: yarn build
+      - name: Zip build files
+        uses: papeloto/action-zip@v1
+        with:
+          files: build/
+          dest: chrome-ext.zip
+      - name: Upload to Google Drive
+        uses: satackey/action-google-drive@v1
+        with:
+          skicka-tokencache-json: ${{ secrets.SKICKA_TOKENCACHE_JSON }}
+          upload-from: chrome-ext.zip
+          upload-to: /forbole-portal-extension/chrome-ext.zip
