@@ -42,29 +42,25 @@ export const handleMessages = (request: any, sender: any, sendResponse: any) => 
       chrome.storage.local.get(['wallets'], (result) => {
         const { password, wallet } = request.data
         const wallets = decryptWallets(result.wallets, password)
-        if (!wallets) {
-          sendResponse({ err: 'incorrect password' })
-        } else {
-          const walletToBeSaved = {
-            name: wallet.name,
-            cryptos: wallet.cryptos,
-            mnemonic: CryptoJS.AES.encrypt(wallet.mnemonic, wallet.securityPassword).toString(),
-            id: CryptoJS.SHA256(wallet.mnemonic).toString(),
-          }
-          const encryptedWalletsString = CryptoJS.AES.encrypt(
-            JSON.stringify([walletToBeSaved, ...(wallets || [])]),
-            password
-          ).toString()
-          chrome.storage.local.set({ wallets: encryptedWalletsString }, function () {
-            sendResponse({
-              wallet: {
-                name: walletToBeSaved.name,
-                id: walletToBeSaved.id,
-                cryptos: walletToBeSaved.cryptos,
-              },
-            })
-          })
+        const walletToBeSaved = {
+          name: wallet.name,
+          cryptos: wallet.cryptos,
+          mnemonic: CryptoJS.AES.encrypt(wallet.mnemonic, wallet.securityPassword).toString(),
+          id: CryptoJS.SHA256(wallet.mnemonic).toString(),
         }
+        const encryptedWalletsString = CryptoJS.AES.encrypt(
+          JSON.stringify([walletToBeSaved, ...(wallets || [])]),
+          password
+        ).toString()
+        chrome.storage.local.set({ wallets: encryptedWalletsString }, function () {
+          sendResponse({
+            wallet: {
+              name: walletToBeSaved.name,
+              id: walletToBeSaved.id,
+              cryptos: walletToBeSaved.cryptos,
+            },
+          })
+        })
       })
       break
     default:
