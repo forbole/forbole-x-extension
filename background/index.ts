@@ -12,7 +12,7 @@ export const decryptWallets = (encryptedWalletsString: string, password: string)
   }
 }
 
-export const handleMessages = (request, sender, sendResponse) => {
+export const handleMessages = (request: any, sender: any, sendResponse: any) => {
   switch (request.event) {
     case 'ping':
       chrome.storage.local.get(['wallets'], (result) => {
