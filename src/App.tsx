@@ -1,6 +1,6 @@
 import React from 'react'
 
-function App() {
+const App: React.FC = () => {
   const clearStorage = React.useCallback(() => {
     chrome.storage.local.clear()
   }, [])
