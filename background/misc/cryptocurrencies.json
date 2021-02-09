@@ -1,0 +1,4 @@
+{
+  "ATOM": { "coinType": 118, "prefix": "cosmos" },
+  "DSM": { "coinType": 852, "prefix": "desmos" }
+}

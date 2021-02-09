@@ -1,19 +1,12 @@
 import { Secp256k1HdWallet } from '@cosmjs/launchpad'
 import CryptoJS from 'crypto-js'
-import { Wallet } from '../types'
+import { addWallet, getWallets } from './wallets'
 
-export const decryptWallets = (encryptedWalletsString: string, password: string) => {
-  try {
-    const wallets = JSON.parse(
-      CryptoJS.AES.decrypt(encryptedWalletsString, password).toString(CryptoJS.enc.Utf8)
-    )
-    return wallets
-  } catch (err) {
-    return null
-  }
-}
-
-export const handleMessages = async (request: any, sender: any, sendResponse: any) => {
+export const handleMessages = async (
+  request: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void
+): Promise<void> => {
   if (request.event === 'ping') {
     chrome.storage.local.get(['wallets'], (result) => {
       sendResponse({
@@ -21,45 +14,19 @@ export const handleMessages = async (request: any, sender: any, sendResponse: an
       })
     })
   } else if (request.event === 'getWallets') {
-    chrome.storage.local.get(['wallets'], (result) => {
-      const { password } = request.data
-      const wallets = decryptWallets(result.wallets, password)
-      sendResponse(
-        !wallets
-          ? { err: 'incorrect password' }
-          : {
-              wallets: (wallets || []).map((w: Wallet) => ({
-                name: w.name,
-                id: w.id,
-                cryptos: w.cryptos,
-              })),
-            }
-      )
-    })
+    try {
+      const wallets = await getWallets(request.data.password)
+      sendResponse({ wallets })
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
   } else if (request.event === 'addWallet') {
-    chrome.storage.local.get(['wallets'], (result) => {
-      const { password, wallet } = request.data
-      const wallets = decryptWallets(result.wallets, password)
-      const walletToBeSaved = {
-        name: wallet.name,
-        cryptos: wallet.cryptos,
-        mnemonic: CryptoJS.AES.encrypt(wallet.mnemonic, wallet.securityPassword).toString(),
-        id: CryptoJS.SHA256(wallet.mnemonic).toString(),
-      }
-      const encryptedWalletsString = CryptoJS.AES.encrypt(
-        JSON.stringify([walletToBeSaved, ...(wallets || [])]),
-        password
-      ).toString()
-      chrome.storage.local.set({ wallets: encryptedWalletsString }, function () {
-        sendResponse({
-          wallet: {
-            name: walletToBeSaved.name,
-            id: walletToBeSaved.id,
-            cryptos: walletToBeSaved.cryptos,
-          },
-        })
-      })
-    })
+    try {
+      const wallet = await addWallet(request.data.password, request.data.wallet)
+      sendResponse({ wallet })
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
   } else if (request.event === 'generateMnemonic') {
     const { mnemonic } = await Secp256k1HdWallet.generate(24)
     sendResponse({ mnemonic })

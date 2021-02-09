@@ -1,6 +1,8 @@
+export type Cryptos = 'ATOM' | 'DSM'
+
 export interface Wallet {
   id: string
   name: string
   mnemonic: string
-  cryptos: string[]
+  createdAt: number
 }
