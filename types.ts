@@ -6,3 +6,13 @@ export interface Wallet {
   mnemonic: string
   createdAt: number
 }
+
+export interface Account {
+  walletId: string
+  address: string
+  crypto: string
+  index: number
+  name: string
+  fav: boolean
+  createdAt: number
+}

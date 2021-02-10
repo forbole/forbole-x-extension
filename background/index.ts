@@ -1,5 +1,6 @@
 import { Secp256k1HdWallet } from '@cosmjs/launchpad'
 import CryptoJS from 'crypto-js'
+import { getAccounts } from './accounts'
 import { addWallet, getWallets } from './wallets'
 
 export const handleMessages = async (
@@ -20,10 +21,17 @@ export const handleMessages = async (
     } catch (err) {
       sendResponse({ err: err.message })
     }
+  } else if (request.event === 'getAccounts') {
+    try {
+      const accounts = await getAccounts(request.data.password)
+      sendResponse({ accounts })
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
   } else if (request.event === 'addWallet') {
     try {
-      const wallet = await addWallet(request.data.password, request.data.wallet)
-      sendResponse({ wallet })
+      const { wallet, accounts } = await addWallet(request.data.password, request.data.wallet)
+      sendResponse({ wallet, accounts })
     } catch (err) {
       sendResponse({ err: err.message })
     }
