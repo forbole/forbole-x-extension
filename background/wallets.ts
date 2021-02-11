@@ -74,3 +74,58 @@ export const addWallet = (
       }
     })
   )
+
+export const updateWallet = (
+  password: string,
+  id: string,
+  wallet: {
+    name?: string
+    securityPassword?: string
+    oldSecurityPassword?: string
+  }
+): Promise<{ name: string; id: string; createdAt: number }> =>
+  new Promise((resolve, reject) =>
+    chrome.storage.local.get(['wallets'], async (result) => {
+      try {
+        const wallets = await decryptStorage<Wallet[]>(result.wallets, password, [])
+        const walletToBeUpdated = wallets.find((w) => w.id === id)
+        if (!walletToBeUpdated) {
+          return reject(new Error('wallet not found'))
+        }
+        if (wallet.name) {
+          walletToBeUpdated.name = wallet.name
+        }
+        if (wallet.securityPassword) {
+          if (!wallet.oldSecurityPassword) {
+            return reject(new Error('incorrect password'))
+          }
+          let mnemonic = ''
+          try {
+            mnemonic = CryptoJS.AES.decrypt(
+              walletToBeUpdated.mnemonic,
+              wallet.oldSecurityPassword
+            ).toString()
+          } catch (err) {
+            return reject(new Error('incorrect password'))
+          }
+          walletToBeUpdated.mnemonic = CryptoJS.AES.encrypt(
+            mnemonic,
+            wallet.securityPassword
+          ).toString()
+        }
+        const encryptedWalletsString = CryptoJS.AES.encrypt(
+          JSON.stringify(wallets.map((w) => (w.id === id ? walletToBeUpdated : w))),
+          password
+        ).toString()
+        return chrome.storage.local.set({ wallets: encryptedWalletsString }, () => {
+          resolve({
+            name: walletToBeUpdated.name,
+            id: walletToBeUpdated.id,
+            createdAt: walletToBeUpdated.createdAt,
+          })
+        })
+      } catch (err) {
+        return reject(err)
+      }
+    })
+  )

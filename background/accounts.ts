@@ -35,3 +35,34 @@ export const addAccount = (
       }
     })
   )
+
+export const updateAccount = (
+  password: string,
+  address: string,
+  account: Partial<Account>
+): Promise<Account> =>
+  new Promise((resolve, reject) =>
+    chrome.storage.local.get(['accounts'], async (result) => {
+      try {
+        const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
+        let newAccount: Account
+        const encryptedAccountsString = CryptoJS.AES.encrypt(
+          JSON.stringify(
+            accounts.map((a) => {
+              if (a.address === address) {
+                newAccount = { ...a, ...account }
+                return newAccount
+              }
+              return a
+            })
+          ),
+          password
+        ).toString()
+        chrome.storage.local.set({ accounts: encryptedAccountsString }, () => {
+          resolve(newAccount)
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+  )
