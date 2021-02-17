@@ -1,7 +1,7 @@
 import { Secp256k1HdWallet } from '@cosmjs/launchpad'
 import CryptoJS from 'crypto-js'
 import { addAccount, getAccounts, updateAccount } from './accounts'
-import { addWallet, getWallets, updateWallet } from './wallets'
+import { addWallet, getWallets, updateWallet, viewMnemonicPhrase } from './wallets'
 
 export const handleMessages = async (
   request: any,
@@ -80,6 +80,17 @@ export const handleMessages = async (
       sendResponse({ mnemonic })
     } catch (err) {
       sendResponse({ err: 'invalid mnemonic backup' })
+    }
+  } else if (request.event === 'viewMnemonicPhrase') {
+    try {
+      const mnemonic = await viewMnemonicPhrase(
+        request.data.password,
+        request.data.id,
+        request.data.securityPassword
+      )
+      sendResponse({ mnemonic })
+    } catch (err) {
+      sendResponse({ err: err.message })
     }
   } else {
     sendResponse({ error: 'unknown event' })

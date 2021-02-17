@@ -81,7 +81,7 @@ export const updateWallet = (
   wallet: {
     name?: string
     securityPassword?: string
-    oldSecurityPassword?: string
+    mnemonic?: string
   }
 ): Promise<{ name: string; id: string; createdAt: number }> =>
   new Promise((resolve, reject) =>
@@ -90,26 +90,14 @@ export const updateWallet = (
         const wallets = await decryptStorage<Wallet[]>(result.wallets, password, [])
         const walletToBeUpdated = wallets.find((w) => w.id === id)
         if (!walletToBeUpdated) {
-          return reject(new Error('wallet not found'))
+          throw new Error('wallet not found')
         }
         if (wallet.name) {
           walletToBeUpdated.name = wallet.name
         }
-        if (wallet.securityPassword) {
-          if (!wallet.oldSecurityPassword) {
-            return reject(new Error('incorrect password'))
-          }
-          let mnemonic = ''
-          try {
-            mnemonic = CryptoJS.AES.decrypt(
-              walletToBeUpdated.mnemonic,
-              wallet.oldSecurityPassword
-            ).toString()
-          } catch (err) {
-            return reject(new Error('incorrect password'))
-          }
+        if (wallet.securityPassword && wallet.mnemonic) {
           walletToBeUpdated.mnemonic = CryptoJS.AES.encrypt(
-            mnemonic,
+            wallet.mnemonic,
             wallet.securityPassword
           ).toString()
         }
@@ -126,6 +114,29 @@ export const updateWallet = (
         })
       } catch (err) {
         return reject(err)
+      }
+    })
+  )
+
+export const viewMnemonicPhrase = (
+  password: string,
+  id: string,
+  securityPassword: string
+): Promise<string> =>
+  new Promise((resolve, reject) =>
+    chrome.storage.local.get(['wallets'], async (result) => {
+      try {
+        const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
+        const wallet = wallets.find((w) => w.id === id)
+        if (!wallet) {
+          return reject(new Error('wallet not found'))
+        }
+        const mnemonic = CryptoJS.AES.decrypt(wallet.mnemonic, securityPassword).toString(
+          CryptoJS.enc.Utf8
+        )
+        return resolve(mnemonic)
+      } catch (err) {
+        return reject(new Error('incorrect password'))
       }
     })
   )
