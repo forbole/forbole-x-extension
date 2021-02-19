@@ -81,7 +81,7 @@ export const updateWallet = (
   wallet: {
     name?: string
     securityPassword?: string
-    mnemonic?: string
+    newSecurityPassword?: string
   }
 ): Promise<{ name: string; id: string; createdAt: number }> =>
   new Promise((resolve, reject) =>
@@ -95,10 +95,19 @@ export const updateWallet = (
         if (wallet.name) {
           walletToBeUpdated.name = wallet.name
         }
-        if (wallet.securityPassword && wallet.mnemonic) {
+        if (wallet.securityPassword && wallet.newSecurityPassword) {
+          let mnemonic = ''
+          try {
+            mnemonic = CryptoJS.AES.decrypt(
+              walletToBeUpdated.mnemonic,
+              wallet.securityPassword
+            ).toString(CryptoJS.enc.Utf8)
+          } catch (err) {
+            throw new Error('incorrect password')
+          }
           walletToBeUpdated.mnemonic = CryptoJS.AES.encrypt(
-            wallet.mnemonic,
-            wallet.securityPassword
+            mnemonic,
+            wallet.newSecurityPassword
           ).toString()
         }
         const encryptedWalletsString = CryptoJS.AES.encrypt(
@@ -118,10 +127,32 @@ export const updateWallet = (
     })
   )
 
-export const viewMnemonicPhrase = (
+export const verifySecurityPassword = (
   password: string,
   id: string,
   securityPassword: string
+): Promise<{ success: boolean }> =>
+  new Promise((resolve, reject) =>
+    chrome.storage.local.get(['wallets'], async (result) => {
+      try {
+        const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
+        const wallet = wallets.find((w) => w.id === id)
+        if (!wallet) {
+          return reject(new Error('wallet not found'))
+        }
+        CryptoJS.AES.decrypt(wallet.mnemonic, securityPassword).toString(CryptoJS.enc.Utf8)
+        return resolve({ success: true })
+      } catch (err) {
+        return reject(new Error('incorrect password'))
+      }
+    })
+  )
+
+export const viewMnemonicPhrase = (
+  password: string,
+  id: string,
+  securityPassword: string,
+  backupPassword: string
 ): Promise<string> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['wallets'], async (result) => {
@@ -134,7 +165,7 @@ export const viewMnemonicPhrase = (
         const mnemonic = CryptoJS.AES.decrypt(wallet.mnemonic, securityPassword).toString(
           CryptoJS.enc.Utf8
         )
-        return resolve(mnemonic)
+        return resolve(CryptoJS.AES.encrypt(mnemonic, backupPassword).toString())
       } catch (err) {
         return reject(new Error('incorrect password'))
       }
