@@ -111,7 +111,7 @@ export const handleMessages = async (
       sendResponse({ err: err.message })
     }
   } else {
-    sendResponse({ error: 'unknown event' })
+    sendResponse({ err: 'unknown event' })
   }
 }
 

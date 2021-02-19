@@ -102,6 +102,9 @@ export const updateWallet = (
               walletToBeUpdated.mnemonic,
               wallet.securityPassword
             ).toString(CryptoJS.enc.Utf8)
+            if (!mnemonic) {
+              throw new Error()
+            }
           } catch (err) {
             throw new Error('incorrect password')
           }
@@ -140,7 +143,12 @@ export const verifySecurityPassword = (
         if (!wallet) {
           return reject(new Error('wallet not found'))
         }
-        CryptoJS.AES.decrypt(wallet.mnemonic, securityPassword).toString(CryptoJS.enc.Utf8)
+        const mnemonic = CryptoJS.AES.decrypt(wallet.mnemonic, securityPassword).toString(
+          CryptoJS.enc.Utf8
+        )
+        if (!mnemonic) {
+          throw new Error()
+        }
         return resolve({ success: true })
       } catch (err) {
         return reject(new Error('incorrect password'))
@@ -165,6 +173,9 @@ export const viewMnemonicPhrase = (
         const mnemonic = CryptoJS.AES.decrypt(wallet.mnemonic, securityPassword).toString(
           CryptoJS.enc.Utf8
         )
+        if (!mnemonic) {
+          throw new Error()
+        }
         return resolve(CryptoJS.AES.encrypt(mnemonic, backupPassword).toString())
       } catch (err) {
         return reject(new Error('incorrect password'))
