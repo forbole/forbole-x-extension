@@ -66,3 +66,27 @@ export const updateAccount = (
       }
     })
   )
+
+export const deleteAccount = (password: string, address: string): Promise<{ success: boolean }> =>
+  new Promise((resolve, reject) =>
+    chrome.storage.local.get(['accounts'], async (result) => {
+      try {
+        const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
+        const filteredAccounts = accounts.filter((a) => a.address !== address)
+        if (!filteredAccounts.length) {
+          return chrome.storage.local.remove('accounts', () => {
+            resolve({ success: true })
+          })
+        }
+        const encryptedAccountsString = CryptoJS.AES.encrypt(
+          JSON.stringify(filteredAccounts),
+          password
+        ).toString()
+        return chrome.storage.local.set({ accounts: encryptedAccountsString }, () => {
+          resolve({ success: true })
+        })
+      } catch (err) {
+        return reject(err)
+      }
+    })
+  )

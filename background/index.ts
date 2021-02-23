@@ -1,8 +1,9 @@
 import { Secp256k1HdWallet } from '@cosmjs/launchpad'
 import CryptoJS from 'crypto-js'
-import { addAccount, getAccounts, updateAccount } from './accounts'
+import { addAccount, deleteAccount, getAccounts, updateAccount } from './accounts'
 import {
   addWallet,
+  deleteWallet,
   getWallets,
   updateWallet,
   verifySecurityPassword,
@@ -27,17 +28,31 @@ export const handleMessages = async (
     } catch (err) {
       sendResponse({ err: err.message })
     }
-  } else if (request.event === 'getAccounts') {
-    try {
-      const accounts = await getAccounts(request.data.password)
-      sendResponse({ accounts })
-    } catch (err) {
-      sendResponse({ err: err.message })
-    }
   } else if (request.event === 'addWallet') {
     try {
       const { wallet, accounts } = await addWallet(request.data.password, request.data.wallet)
       sendResponse({ wallet, accounts })
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
+  } else if (request.event === 'updateWallet') {
+    try {
+      const wallet = await updateWallet(request.data.password, request.data.id, request.data.wallet)
+      sendResponse({ wallet })
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
+  } else if (request.event === 'deleteWallet') {
+    try {
+      const result = await deleteWallet(request.data.password, request.data.id)
+      sendResponse(result)
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
+  } else if (request.event === 'getAccounts') {
+    try {
+      const accounts = await getAccounts(request.data.password)
+      sendResponse({ accounts })
     } catch (err) {
       sendResponse({ err: err.message })
     }
@@ -59,10 +74,10 @@ export const handleMessages = async (
     } catch (err) {
       sendResponse({ err: err.message })
     }
-  } else if (request.event === 'updateWallet') {
+  } else if (request.event === 'deleteAccount') {
     try {
-      const wallet = await updateWallet(request.data.password, request.data.id, request.data.wallet)
-      sendResponse({ wallet })
+      const result = await deleteAccount(request.data.password, request.data.address)
+      sendResponse(result)
     } catch (err) {
       sendResponse({ err: err.message })
     }

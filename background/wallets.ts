@@ -130,6 +130,30 @@ export const updateWallet = (
     })
   )
 
+export const deleteWallet = (password: string, id: string): Promise<{ success: boolean }> =>
+  new Promise((resolve, reject) =>
+    chrome.storage.local.get(['wallets'], async (result) => {
+      try {
+        const wallets = await decryptStorage<Wallet[]>(result.wallets, password, [])
+        const filteredWallets = wallets.filter((w) => w.id !== id)
+        if (!filteredWallets.length) {
+          return chrome.storage.local.remove('wallets', () => {
+            resolve({ success: true })
+          })
+        }
+        const encryptedWalletsString = CryptoJS.AES.encrypt(
+          JSON.stringify(filteredWallets),
+          password
+        ).toString()
+        return chrome.storage.local.set({ wallets: encryptedWalletsString }, () => {
+          resolve({ success: true })
+        })
+      } catch (err) {
+        return reject(err)
+      }
+    })
+  )
+
 export const verifySecurityPassword = (
   password: string,
   id: string,
