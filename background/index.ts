@@ -58,7 +58,11 @@ export const handleMessages = async (
     }
   } else if (request.event === 'addAccount') {
     try {
-      const account = await addAccount(request.data.password, request.data.account)
+      const account = await addAccount(
+        request.data.password,
+        request.data.account,
+        request.data.securityPassword
+      )
       sendResponse({ account })
     } catch (err) {
       sendResponse({ err: err.message })

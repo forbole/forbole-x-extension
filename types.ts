@@ -10,7 +10,7 @@ export interface Wallet {
 export interface Account {
   walletId: string
   address: string
-  crypto: string
+  crypto: Cryptos
   index: number
   name: string
   fav: boolean
