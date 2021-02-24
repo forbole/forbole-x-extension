@@ -52,7 +52,6 @@ export const addWallet = (
             index: 0,
             name: wallet.cryptos[i],
             crypto: wallet.cryptos[i],
-            fav: false,
           })
           newAccounts.push(newAccount)
         }

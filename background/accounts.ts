@@ -18,7 +18,7 @@ export const getAccounts = (password: string): Promise<Account[]> =>
 
 export const addAccount = (
   password: string,
-  account: Omit<Account, 'createdAt'>,
+  account: Omit<Account, 'createdAt' | 'fav'>,
   securityPassword?: string
 ): Promise<Account> =>
   new Promise((resolve, reject) =>
@@ -42,7 +42,7 @@ export const addAccount = (
             ) + 1
           address = await getWalletAddress(mnemonic, account.crypto, index)
         }
-        const newAccount = { ...account, address, index, createdAt: Date.now() }
+        const newAccount = { ...account, address, index, createdAt: Date.now(), fav: false }
         const encryptedAccountsString = CryptoJS.AES.encrypt(
           JSON.stringify([newAccount, ...(accounts || [])]),
           password
