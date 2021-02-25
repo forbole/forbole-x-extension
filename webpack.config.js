@@ -1,16 +1,17 @@
-const path = require("path");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path')
 
 module.exports = {
-  entry: "./background/index.ts",
+  entry: './src/background/index.ts',
   module: {
     rules: [
       {
         test: /\.ts?$/,
         use: [
           {
-            loader: "ts-loader",
+            loader: 'ts-loader',
             options: {
-              configFile: "tsconfig.background.json",
+              configFile: 'tsconfig.background.json',
             },
           },
         ],
@@ -19,10 +20,10 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: "background.js",
-    path: path.resolve(__dirname, "build"),
+    filename: 'background.js',
+    path: path.resolve(__dirname, 'build'),
   },
-};
+}

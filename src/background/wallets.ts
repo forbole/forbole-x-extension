@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js'
 import decryptStorage from './misc/decryptStorage'
 import decryptMnemonic from './misc/decryptMnemonic'
-import { Wallet, Account } from '../types'
+import { Wallet, Account } from '../../types'
 import getWalletAddress from './misc/getWalletAddress'
 import cryptocurrencies from './misc/cryptocurrencies.json'
 import { addAccount } from './accounts'

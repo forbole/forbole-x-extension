@@ -12,7 +12,7 @@ import {
 
 export const handleMessages = async (
   request: any,
-  sender: chrome.runtime.MessageSender,
+  sender: any,
   sendResponse: (response?: any) => void
 ): Promise<void> => {
   if (request.event === 'ping') {
