@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js'
 import decryptStorage from './misc/decryptStorage'
-import { Account, Wallet } from '../../types'
+import { Account, CreateAccountParams, Wallet } from '../../types'
 import decryptMnemonic from './misc/decryptMnemonic'
 import getWalletAddress from './misc/getWalletAddress'
 
@@ -18,7 +18,7 @@ export const getAccounts = (password: string): Promise<Account[]> =>
 
 export const addAccount = (
   password: string,
-  account: Omit<Account, 'createdAt' | 'fav'>,
+  account: CreateAccountParams,
   securityPassword?: string
 ): Promise<Account> =>
   new Promise((resolve, reject) =>
@@ -26,7 +26,7 @@ export const addAccount = (
       try {
         const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
         let { address, index } = account
-        if (!address) {
+        if (!address || index === undefined) {
           const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
           const wallet = wallets.find((w) => w.id === account.walletId)
           if (!wallet) {

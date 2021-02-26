@@ -16,3 +16,11 @@ export interface Account {
   fav: boolean
   createdAt: number
 }
+
+export interface CreateAccountParams {
+  walletId: string
+  address?: string
+  index?: number
+  name: string
+  crypto: Cryptos
+}
