@@ -7,7 +7,7 @@ import {
   deleteWallet,
   getWallets,
   updateWallet,
-  verifySecurityPassword,
+  viewMnemonicPhraseBackup,
   viewMnemonicPhrase,
 } from '../../background/wallets'
 
@@ -248,30 +248,30 @@ describe('background: handleMessages', () => {
     expect(Secp256k1HdWallet.fromMnemonic).toBeCalledWith('mnemonic')
     expect(sendResponse).toBeCalledWith({ err: 'invalid mnemonic' })
   })
-  it('handles verify security password', async () => {
-    ;(verifySecurityPassword as jest.Mock).mockResolvedValueOnce({ success: true })
+  it('handles view mnemonic phrase', async () => {
+    ;(viewMnemonicPhrase as jest.Mock).mockResolvedValueOnce('mnemonic')
     await handleMessages(
       {
-        event: 'verifySecurityPassword',
+        event: 'viewMnemonicPhrase',
         data: { password, id: wallet.id, securityPassword: 'securityPassword' },
       },
       undefined,
       sendResponse
     )
-    expect(verifySecurityPassword).toBeCalledWith(password, wallet.id, 'securityPassword')
-    expect(sendResponse).toBeCalledWith({ success: true })
+    expect(viewMnemonicPhrase).toBeCalledWith(password, wallet.id, 'securityPassword')
+    expect(sendResponse).toBeCalledWith({ mnemonic: 'mnemonic' })
   })
-  it('handles verify security password with error', async () => {
-    ;(verifySecurityPassword as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+  it('handles view mnemonic phrase with error', async () => {
+    ;(viewMnemonicPhrase as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
     await handleMessages(
       {
-        event: 'verifySecurityPassword',
+        event: 'viewMnemonicPhrase',
         data: { password, id: wallet.id, securityPassword: 'securityPassword' },
       },
       undefined,
       sendResponse
     )
-    expect(verifySecurityPassword).toBeCalledWith(password, wallet.id, 'securityPassword')
+    expect(viewMnemonicPhrase).toBeCalledWith(password, wallet.id, 'securityPassword')
     expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
   })
 })

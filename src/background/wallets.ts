@@ -1,9 +1,8 @@
 import CryptoJS from 'crypto-js'
 import decryptStorage from './misc/decryptStorage'
 import decryptMnemonic from './misc/decryptMnemonic'
-import { Wallet, Account } from '../../types'
+import { Wallet, Account, CreateWalletParams } from '../../types'
 import getWalletAddress from './misc/getWalletAddress'
-import cryptocurrencies from './misc/cryptocurrencies.json'
 import { addAccount } from './accounts'
 
 export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]> =>
@@ -26,12 +25,7 @@ export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]
 
 export const addWallet = (
   password: string,
-  wallet: {
-    name: string
-    mnemonic: string
-    cryptos: (keyof typeof cryptocurrencies)[]
-    securityPassword: string
-  }
+  wallet: CreateWalletParams
 ): Promise<{ wallet: { name: string; id: string; createdAt: number }; accounts: Account[] }> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['wallets'], async (result) => {
@@ -124,12 +118,14 @@ export const updateWallet = (
 
 export const deleteWallet = (password: string, id: string): Promise<{ success: boolean }> =>
   new Promise((resolve, reject) =>
-    chrome.storage.local.get(['wallets'], async (result) => {
+    chrome.storage.local.get(['wallets', 'accounts'], async (result) => {
       try {
         const wallets = await decryptStorage<Wallet[]>(result.wallets, password, [])
+        const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
         const filteredWallets = wallets.filter((w) => w.id !== id)
+        const filteredAccounts = accounts.filter((a) => a.walletId !== id)
         if (!filteredWallets.length) {
-          return chrome.storage.local.remove('wallets', () => {
+          return chrome.storage.local.remove(['wallets', 'accounts'], () => {
             resolve({ success: true })
           })
         }
@@ -137,32 +133,18 @@ export const deleteWallet = (password: string, id: string): Promise<{ success: b
           JSON.stringify(filteredWallets),
           password
         ).toString()
-        return chrome.storage.local.set({ wallets: encryptedWalletsString }, () => {
-          resolve({ success: true })
-        })
+        const encryptedAccountsString = CryptoJS.AES.encrypt(
+          JSON.stringify(filteredAccounts),
+          password
+        ).toString()
+        return chrome.storage.local.set(
+          { wallets: encryptedWalletsString, accounts: encryptedAccountsString },
+          () => {
+            resolve({ success: true })
+          }
+        )
       } catch (err) {
         return reject(err)
-      }
-    })
-  )
-
-export const verifySecurityPassword = (
-  password: string,
-  id: string,
-  securityPassword: string
-): Promise<{ success: boolean }> =>
-  new Promise((resolve, reject) =>
-    chrome.storage.local.get(['wallets'], async (result) => {
-      try {
-        const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
-        const wallet = wallets.find((w) => w.id === id)
-        if (!wallet) {
-          return reject(new Error('wallet not found'))
-        }
-        await decryptMnemonic(wallet.mnemonic, securityPassword)
-        return resolve({ success: true })
-      } catch (err) {
-        return reject(new Error('incorrect password'))
       }
     })
   )
@@ -170,8 +152,7 @@ export const verifySecurityPassword = (
 export const viewMnemonicPhrase = (
   password: string,
   id: string,
-  securityPassword: string,
-  backupPassword: string
+  securityPassword: string
 ): Promise<string> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['wallets'], async (result) => {
@@ -182,9 +163,19 @@ export const viewMnemonicPhrase = (
           return reject(new Error('wallet not found'))
         }
         const mnemonic = await decryptMnemonic(wallet.mnemonic, securityPassword)
-        return resolve(CryptoJS.AES.encrypt(mnemonic, backupPassword).toString())
+        return resolve(mnemonic)
       } catch (err) {
         return reject(new Error('incorrect password'))
       }
     })
   )
+
+export const viewMnemonicPhraseBackup = async (
+  password: string,
+  id: string,
+  securityPassword: string,
+  backupPassword: string
+): Promise<string> => {
+  const mnemonic = await viewMnemonicPhrase(password, id, securityPassword)
+  return CryptoJS.AES.encrypt(mnemonic, backupPassword).toString()
+}

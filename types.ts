@@ -1,4 +1,6 @@
-export type Cryptos = 'ATOM' | 'DSM'
+import cryptocurrencies from './src/background/misc/cryptocurrencies.json'
+
+export type Cryptos = keyof typeof cryptocurrencies
 
 export interface Wallet {
   id: string
@@ -23,4 +25,11 @@ export interface CreateAccountParams {
   index?: number
   name: string
   crypto: Cryptos
+}
+
+export interface CreateWalletParams {
+  name: string
+  mnemonic: string
+  cryptos: Cryptos[]
+  securityPassword: string
 }

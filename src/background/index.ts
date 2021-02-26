@@ -6,8 +6,8 @@ import {
   deleteWallet,
   getWallets,
   updateWallet,
-  verifySecurityPassword,
   viewMnemonicPhrase,
+  viewMnemonicPhraseBackup,
 } from './wallets'
 
 export const handleMessages = async (
@@ -106,20 +106,20 @@ export const handleMessages = async (
     } catch (err) {
       sendResponse({ err: 'invalid mnemonic backup' })
     }
-  } else if (request.event === 'verifySecurityPassword') {
+  } else if (request.event === 'viewMnemonicPhrase') {
     try {
-      const result = await verifySecurityPassword(
+      const mnemonic = await viewMnemonicPhrase(
         request.data.password,
         request.data.id,
         request.data.securityPassword
       )
-      sendResponse(result)
+      sendResponse({ mnemonic })
     } catch (err) {
       sendResponse({ err: err.message })
     }
-  } else if (request.event === 'viewMnemonicPhrase') {
+  } else if (request.event === 'viewMnemonicPhraseBackup') {
     try {
-      const mnemonic = await viewMnemonicPhrase(
+      const mnemonic = await viewMnemonicPhraseBackup(
         request.data.password,
         request.data.id,
         request.data.securityPassword,
