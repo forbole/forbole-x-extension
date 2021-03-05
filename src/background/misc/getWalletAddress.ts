@@ -7,6 +7,11 @@ const getWalletAddress = async (
   crypto: keyof typeof cryptocurrencies,
   index: number
 ): Promise<string> => {
+  if (crypto === 'SOL') {
+    const { getPubkeyFromConfig, SignerConfig } = await import('bd-solana-wasm')
+    const address = getPubkeyFromConfig(new SignerConfig('', mnemonic, ''))
+    return address
+  }
   const wallet = await Secp256k1HdWallet.fromMnemonic(
     mnemonic,
     [
