@@ -17,10 +17,6 @@ module.exports = {
         ],
         exclude: /node_modules/,
       },
-      {
-        test: /\.wasm$/,
-        loaders: ['wasm-loader'],
-      },
     ],
   },
   resolve: {
