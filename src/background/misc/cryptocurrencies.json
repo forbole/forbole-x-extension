@@ -1,4 +1,5 @@
 {
   "ATOM": { "coinType": 118, "prefix": "cosmos" },
-  "DSM": { "coinType": 852, "prefix": "desmos" }
+  "DSM": { "coinType": 852, "prefix": "desmos" },
+  "SOL": { "coinType": 501, "prefix": "" }
 }

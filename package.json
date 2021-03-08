@@ -5,6 +5,7 @@
   "dependencies": {
     "@cosmjs/crypto": "^0.23.2",
     "@cosmjs/launchpad": "^0.23.2",
+    "bd-solana-wasm": "^0.1.2",
     "crypto-js": "^4.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
