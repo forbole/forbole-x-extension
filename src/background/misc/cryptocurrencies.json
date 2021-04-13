@@ -1,5 +1,16 @@
 {
-  "ATOM": { "coinType": 118, "prefix": "cosmos" },
-  "DSM": { "coinType": 852, "prefix": "desmos" },
-  "SOL": { "coinType": 501, "prefix": "" }
+  "DSM": {
+    "coinType": 852,
+    "prefix": "desmos",
+    "lcdApi": "http://lcd.morpheus.desmos.network:1317",
+    "defaultGasFee": {
+      "amount": [
+        {
+          "amount": "4000",
+          "denom": "udaric"
+        }
+      ],
+      "gas": "80000"
+    }
+  }
 }
