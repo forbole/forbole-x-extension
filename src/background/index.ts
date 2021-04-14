@@ -1,7 +1,7 @@
 import { Secp256k1HdWallet } from '@cosmjs/launchpad'
 import CryptoJS from 'crypto-js'
 import { addAccount, deleteAccount, getAccounts, updateAccount } from './accounts'
-import signAndBroadcastTransaction from './misc/signAndBroadcastTransaction'
+import signAndBroadcastTransactions from './misc/signAndBroadcastTransactions'
 import {
   addWallet,
   deleteWallet,
@@ -130,7 +130,7 @@ export const handleMessages = async (
     } catch (err) {
       sendResponse({ err: err.message })
     }
-  } else if (request.event === 'signAndBroadcastTransaction') {
+  } else if (request.event === 'signAndBroadcastTransactions') {
     try {
       const accounts = await getAccounts(request.data.password)
       const account = accounts.find((a) => a.address === request.data.address)
@@ -142,14 +142,12 @@ export const handleMessages = async (
         account.walletId,
         request.data.securityPassword
       )
-      // TODO: different messages for different transaction type
-      const result = await signAndBroadcastTransaction(
+      const result = await signAndBroadcastTransactions(
         mnemonic,
         account.crypto,
         account.index,
-        request.data.transactionType,
-        request.data.amount,
-        request.data.toAddress
+        request.data.transactions,
+        request.data.memo
       )
       sendResponse(result)
     } catch (err) {

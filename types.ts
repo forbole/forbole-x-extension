@@ -33,3 +33,40 @@ export interface CreateWalletParams {
   cryptos: Cryptos[]
   securityPassword: string
 }
+
+export interface TransactionDelegate {
+  type: 'delegate'
+  delegator: string
+  validator: string
+  amount: number
+  denom: string
+}
+
+export interface TransactionRedelegate {
+  type: 'redelegate'
+  delegator: string
+  fromValidator: string
+  toValidator: string
+  amount: number
+  denom: string
+}
+
+export interface TransactionWithdrawReward {
+  type: 'withdraw reward'
+  delegator: string
+  validator: string
+}
+
+export interface TransactionSend {
+  type: 'send'
+  from: string
+  to: string
+  amount: number
+  denom: string
+}
+
+export type Transaction =
+  | TransactionDelegate
+  | TransactionRedelegate
+  | TransactionWithdrawReward
+  | TransactionSend
