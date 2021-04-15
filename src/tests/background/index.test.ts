@@ -1,5 +1,4 @@
-import CryptoJS from 'crypto-js'
-import { Secp256k1HdWallet } from '@cosmjs/launchpad'
+import { Secp256k1HdWallet } from '../../../@cosmjs/launchpad'
 import { handleMessages } from '../../background'
 import { addAccount, deleteAccount, getAccounts, updateAccount } from '../../background/accounts'
 import {
@@ -7,7 +6,6 @@ import {
   deleteWallet,
   getWallets,
   updateWallet,
-  viewMnemonicPhraseBackup,
   viewMnemonicPhrase,
 } from '../../background/wallets'
 
@@ -45,7 +43,7 @@ jest.mock('../../background/accounts', () => ({
   updateAccount: jest.fn(),
 }))
 
-jest.mock('@cosmjs/launchpad', () => ({
+jest.mock('../../../@cosmjs/launchpad', () => ({
   Secp256k1HdWallet: {
     generate: jest.fn(),
     fromMnemonic: jest.fn(),

@@ -1,5 +1,5 @@
-import { Secp256k1HdWallet } from '@cosmjs/launchpad'
 import CryptoJS from 'crypto-js'
+import { Secp256k1HdWallet } from '../../@cosmjs/launchpad'
 import { addAccount, deleteAccount, getAccounts, updateAccount } from './accounts'
 import signAndBroadcastTransactions from './misc/signAndBroadcastTransactions'
 import {

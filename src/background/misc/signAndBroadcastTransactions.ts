@@ -1,5 +1,5 @@
-import { coins, Secp256k1HdWallet, SigningCosmosClient } from '@cosmjs/launchpad'
-import { Slip10RawIndex } from '@cosmjs/crypto'
+import { coins, Secp256k1HdWallet, SigningCosmosClient } from '../../../@cosmjs/launchpad'
+import { Slip10RawIndex } from '../../../@cosmjs/crypto'
 import cryptocurrencies from './cryptocurrencies.json'
 import {
   Transaction,

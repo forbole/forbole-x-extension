@@ -1,5 +1,5 @@
-import { Secp256k1HdWallet } from '@cosmjs/launchpad'
-import { Slip10RawIndex } from '@cosmjs/crypto'
+import { Secp256k1HdWallet } from '../../../@cosmjs/launchpad'
+import { Slip10RawIndex } from '../../../@cosmjs/crypto'
 import cryptocurrencies from './cryptocurrencies.json'
 
 const getWalletAddress = async (
