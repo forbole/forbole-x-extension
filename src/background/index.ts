@@ -147,6 +147,7 @@ export const handleMessages = async (
         account.crypto,
         account.index,
         request.data.transactions,
+        request.data.gasFee,
         request.data.memo
       )
       sendResponse(result)

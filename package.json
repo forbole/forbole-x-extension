@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "private": true,
   "dependencies": {
+    "@cosmjs/launchpad": "^0.24.1",
     "bd-solana-wasm": "^0.1.2",
     "crypto-js": "^4.0.0",
     "react": "^17.0.1",
