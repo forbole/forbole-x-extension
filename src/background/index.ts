@@ -154,6 +154,13 @@ export const handleMessages = async (
     } catch (err) {
       sendResponse({ err: err.message })
     }
+  } else if (request.event === 'reset') {
+    try {
+      chrome.storage.local.clear()
+      sendResponse({ success: true })
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
   } else {
     sendResponse({ err: 'unknown event' })
   }
