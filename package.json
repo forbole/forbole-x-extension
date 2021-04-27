@@ -4,8 +4,6 @@
   "private": true,
   "dependencies": {
     "@cosmjs/launchpad": "^0.24.1",
-    "@cosmjs/ledger-amino": "^0.24.1",
-    "@ledgerhq/hw-transport-webusb": "^5.50.0",
     "bd-solana-wasm": "^0.1.2",
     "crypto-js": "^4.0.0",
     "react": "^17.0.1",

@@ -12,7 +12,6 @@ export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]
         const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
         resolve(
           (wallets || []).map((w: Wallet) => ({
-            type: w.type,
             name: w.name,
             id: w.id,
             createdAt: w.createdAt,
