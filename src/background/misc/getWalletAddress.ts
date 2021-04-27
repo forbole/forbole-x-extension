@@ -1,4 +1,6 @@
-import { Secp256k1HdWallet } from '../../../@cosmjs/launchpad'
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
+import { LaunchpadLedger } from '@cosmjs/ledger-amino'
+import { Secp256k1HdWallet, rawSecp256k1PubkeyToAddress } from '../../../@cosmjs/launchpad'
 import { Slip10RawIndex } from '../../../@cosmjs/crypto'
 import cryptocurrencies from './cryptocurrencies.json'
 
@@ -7,6 +9,12 @@ const getWalletAddress = async (
   crypto: keyof typeof cryptocurrencies,
   index: number
 ): Promise<string> => {
+  // if (walletType === 'ledger') {
+  //   const transport = await TransportWebUSB.create()
+  //   const app = new LaunchpadLedger(transport)
+  //   const pubkey = await app.getPubkey()
+  //   return rawSecp256k1PubkeyToAddress(pubkey, cryptocurrencies[crypto].prefix)
+  // }
   // if (crypto === 'SOL') {
   //   const { getPubkeyFromConfig, SignerConfig } = await import('bd-solana-wasm')
   //   const address = getPubkeyFromConfig(new SignerConfig('', mnemonic, ''))

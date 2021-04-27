@@ -9,7 +9,7 @@ const account = {
   walletId: '123',
   name: 'account',
   address: 'address',
-  crypto: 'ATOM',
+  crypto: 'DSM',
   index: 0,
   fav: false,
 }
@@ -18,7 +18,7 @@ const wallet = {
   id: '123',
   name: 'wallet',
   mnemonic: 'mnemonic',
-  cryptos: ['ATOM'],
+  cryptos: ['DSM'],
 }
 
 const password = '123123'
@@ -66,7 +66,7 @@ describe('background: accounts', () => {
     const newAccount: CreateAccountParams = {
       walletId: '123',
       name: 'new wallet',
-      crypto: 'ATOM',
+      crypto: 'DSM',
       address: 'new address',
       index: 1,
     }
@@ -92,7 +92,7 @@ describe('background: accounts', () => {
     const newAccount: CreateAccountParams = {
       walletId: '123',
       name: 'new wallet',
-      crypto: 'ATOM',
+      crypto: 'DSM',
     }
     const acc = await addAccount(password, newAccount, password)
     expect(acc).toStrictEqual({
@@ -122,7 +122,7 @@ describe('background: accounts', () => {
     const newAccount: CreateAccountParams = {
       walletId: '123123',
       name: 'new wallet',
-      crypto: 'ATOM',
+      crypto: 'DSM',
     }
     try {
       await addAccount(password, newAccount, password)
@@ -139,7 +139,7 @@ describe('background: accounts', () => {
     const newAccount: CreateAccountParams = {
       walletId: '123',
       name: 'new wallet',
-      crypto: 'ATOM',
+      crypto: 'DSM',
       address: 'new address',
       index: 1,
     }

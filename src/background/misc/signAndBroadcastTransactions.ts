@@ -9,7 +9,7 @@ const signAndBroadcastTransactions = async (
   msgs: any[],
   gasFee: any,
   memo?: string
-): Promise<{ success: boolean }> => {
+): Promise<any> => {
   const wallet = await Secp256k1HdWallet.fromMnemonic(
     mnemonic,
     [
@@ -27,8 +27,8 @@ const signAndBroadcastTransactions = async (
     accounts[0].address,
     wallet
   )
-  await client.signAndBroadcast(msgs, gasFee, memo)
-  return { success: true }
+  const result = await client.signAndBroadcast(msgs, gasFee, memo)
+  return result
 }
 
 export default signAndBroadcastTransactions

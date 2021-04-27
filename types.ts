@@ -2,8 +2,11 @@ import cryptocurrencies from './src/background/misc/cryptocurrencies.json'
 
 export type Cryptos = keyof typeof cryptocurrencies
 
+export type WalletType = 'mnemonic' | 'ledger'
+
 export interface Wallet {
   id: string
+  type: WalletType
   name: string
   mnemonic: string
   createdAt: number
@@ -28,6 +31,7 @@ export interface CreateAccountParams {
 }
 
 export interface CreateWalletParams {
+  type: WalletType
   name: string
   mnemonic: string
   cryptos: Cryptos[]
