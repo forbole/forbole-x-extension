@@ -1,8 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizePubkey = exports.uint64ToString = exports.uint64ToNumber = void 0;
-const math_1 = require("@cosmjs/math");
-const pubkey_1 = require("../pubkey");
+'use strict'
+Object.defineProperty(exports, '__esModule', { value: true })
+exports.normalizePubkey = exports.uint64ToString = exports.uint64ToNumber = void 0
+const math_1 = require('../../../math')
+const pubkey_1 = require('../pubkey')
 /**
  * Converts an integer expressed as number or string to a number.
  * Throws if input is not a valid uint64 or if the value exceeds MAX_SAFE_INTEGER.
@@ -10,10 +10,11 @@ const pubkey_1 = require("../pubkey");
  * This is needed for supporting Comsos SDK 0.37/0.38/0.39 with one client.
  */
 function uint64ToNumber(input) {
-    const value = typeof input === "number" ? math_1.Uint64.fromNumber(input) : math_1.Uint64.fromString(input);
-    return value.toNumber();
+  const value =
+    typeof input === 'number' ? math_1.Uint64.fromNumber(input) : math_1.Uint64.fromString(input)
+  return value.toNumber()
 }
-exports.uint64ToNumber = uint64ToNumber;
+exports.uint64ToNumber = uint64ToNumber
 /**
  * Converts an integer expressed as number or string to a string.
  * Throws if input is not a valid uint64.
@@ -21,10 +22,11 @@ exports.uint64ToNumber = uint64ToNumber;
  * This is needed for supporting Comsos SDK 0.37/0.38/0.39 with one client.
  */
 function uint64ToString(input) {
-    const value = typeof input === "number" ? math_1.Uint64.fromNumber(input) : math_1.Uint64.fromString(input);
-    return value.toString();
+  const value =
+    typeof input === 'number' ? math_1.Uint64.fromNumber(input) : math_1.Uint64.fromString(input)
+  return value.toString()
 }
-exports.uint64ToString = uint64ToString;
+exports.uint64ToString = uint64ToString
 /**
  * Normalizes a pubkey as in `BaseAccount.public_key` to allow supporting
  * Comsos SDK 0.37–0.39.
@@ -32,11 +34,9 @@ exports.uint64ToString = uint64ToString;
  * Returns null when unset.
  */
 function normalizePubkey(input) {
-    if (!input)
-        return null;
-    if (typeof input === "string")
-        return pubkey_1.decodeBech32Pubkey(input);
-    return input;
+  if (!input) return null
+  if (typeof input === 'string') return pubkey_1.decodeBech32Pubkey(input)
+  return input
 }
-exports.normalizePubkey = normalizePubkey;
+exports.normalizePubkey = normalizePubkey
 //# sourceMappingURL=utils.js.map
