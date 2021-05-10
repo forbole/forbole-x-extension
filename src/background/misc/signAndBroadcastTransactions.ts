@@ -18,11 +18,7 @@ const signAndBroadcastTransactions = async (
   const accounts = await wallet.getAccounts()
   const client = await SigningStargateClient.connectWithSigner(
     cryptocurrencies[crypto].rpcEndpoint,
-    wallet,
-    {
-      gasPrice: GasPrice.fromString(cryptocurrencies[crypto].gasPrice),
-      gasLimits: cryptocurrencies[crypto].gasLimits,
-    }
+    wallet
   )
   const result = await client.signAndBroadcast(accounts[0].address, msgs, gasFee, memo)
   return result
