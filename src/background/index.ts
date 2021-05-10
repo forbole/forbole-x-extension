@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js'
-import { Secp256k1HdWallet } from '../../@cosmjs/launchpad'
+import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
 import { addAccount, deleteAccount, getAccounts, updateAccount } from './accounts'
 import signAndBroadcastTransactions from './misc/signAndBroadcastTransactions'
 import {
@@ -87,11 +87,11 @@ export const handleMessages = async (
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'generateMnemonic') {
-    const { mnemonic } = await Secp256k1HdWallet.generate(24)
+    const { mnemonic } = await DirectSecp256k1HdWallet.generate(24)
     sendResponse({ mnemonic })
   } else if (request.event === 'verifyMnemonic') {
     try {
-      const { mnemonic } = await Secp256k1HdWallet.fromMnemonic(request.data.mnemonic)
+      const { mnemonic } = await DirectSecp256k1HdWallet.fromMnemonic(request.data.mnemonic)
       sendResponse({ mnemonic })
     } catch (err) {
       sendResponse({ err: 'invalid mnemonic' })
@@ -102,7 +102,7 @@ export const handleMessages = async (
         request.data.backupPhrase,
         request.data.password
       ).toString(CryptoJS.enc.Utf8)
-      const { mnemonic } = await Secp256k1HdWallet.fromMnemonic(mnemonicPhrase)
+      const { mnemonic } = await DirectSecp256k1HdWallet.fromMnemonic(mnemonicPhrase)
       sendResponse({ mnemonic })
     } catch (err) {
       sendResponse({ err: 'invalid mnemonic backup' })

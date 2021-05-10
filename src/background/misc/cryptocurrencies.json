@@ -2,6 +2,14 @@
   "DSM": {
     "coinType": 852,
     "prefix": "desmos",
-    "lcdApi": "http://lcd.morpheus.desmos.network:1317"
+    "rpcEndpoint": "http://rpc.morpheus.desmos.network:26657",
+    "gasPrice": "0.05udaric",
+    "gasLimits": {
+      "send": 80000,
+      "delegate": 160000,
+      "transfer": 160000,
+      "undelegate": 160000,
+      "withdraw": 160000
+    }
   }
 }

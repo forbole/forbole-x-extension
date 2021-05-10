@@ -1,5 +1,5 @@
-import { Secp256k1HdWallet } from '../../../@cosmjs/launchpad'
-import { Slip10RawIndex } from '../../../@cosmjs/crypto'
+import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
+import { stringToPath } from '@cosmjs/crypto'
 import cryptocurrencies from './cryptocurrencies.json'
 
 const getWalletAddress = async (
@@ -12,17 +12,10 @@ const getWalletAddress = async (
   //   const address = getPubkeyFromConfig(new SignerConfig('', mnemonic, ''))
   //   return address
   // }
-  const wallet = await Secp256k1HdWallet.fromMnemonic(
-    mnemonic,
-    [
-      Slip10RawIndex.hardened(44),
-      Slip10RawIndex.hardened(cryptocurrencies[crypto].coinType),
-      Slip10RawIndex.hardened(0),
-      Slip10RawIndex.normal(0),
-      Slip10RawIndex.normal(index),
-    ],
-    cryptocurrencies[crypto].prefix
-  )
+  const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
+    hdPaths: [stringToPath(`m/44'/${cryptocurrencies[crypto].coinType}'/0'/0/${index}`)],
+    prefix: cryptocurrencies[crypto].prefix,
+  })
   const accounts = await wallet.getAccounts()
   return accounts[0].address
 }
