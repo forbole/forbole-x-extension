@@ -1,15 +1,13 @@
 import React from 'react'
 
 const App: React.FC = () => {
-  const clearStorage = React.useCallback(() => {
-    chrome.storage.local.clear()
-  }, [])
   return (
-    <div className="App">
-      <button type="button" onClick={clearStorage}>
-        Clear Storage
-      </button>
-    </div>
+    <iframe
+      title="Forbole X"
+      height={600}
+      width={480}
+      src={`${process.env.REACT_APP_WEB_APP_BASE_URL}/wallets?hide-menu=true`}
+    />
   )
 }
 
