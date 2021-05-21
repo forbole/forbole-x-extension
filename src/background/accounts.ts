@@ -25,13 +25,13 @@ export const addAccount = (
     chrome.storage.local.get(['accounts', 'wallets'], async (result) => {
       try {
         const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
-        let { address, index } = account
-        if (!address || index === undefined) {
-          const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
-          const wallet = wallets.find((w) => w.id === account.walletId)
-          if (!wallet) {
-            throw new Error('wallet not found')
-          }
+        const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
+        const wallet = wallets.find((w) => w.id === account.walletId)
+        if (!wallet) {
+          throw new Error('wallet not found')
+        }
+        let { address = '', index } = account
+        if (wallet.mnemonic && (!address || index === undefined)) {
           const mnemonic = await decryptMnemonic(wallet.mnemonic, securityPassword || '')
           index =
             Math.max(
@@ -41,6 +41,9 @@ export const addAccount = (
                 .map((a) => a.index)
             ) + 1
           address = await getWalletAddress(mnemonic, account.crypto, index)
+        }
+        if (!address || index === undefined) {
+          throw new Error('invalid address or index')
         }
         const newAccount = { ...account, address, index, createdAt: Date.now(), fav: false }
         const encryptedAccountsString = CryptoJS.AES.encrypt(

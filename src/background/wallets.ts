@@ -13,6 +13,7 @@ export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]
         resolve(
           (wallets || []).map((w: Wallet) => ({
             name: w.name,
+            type: w.type,
             id: w.id,
             createdAt: w.createdAt,
           }))
@@ -32,14 +33,26 @@ export const addWallet = (
       try {
         const wallets = await decryptStorage<Wallet[]>(result.wallets, password, [])
         const newAccounts: Account[] = []
-        const walletToBeSaved = {
-          name: wallet.name,
-          mnemonic: CryptoJS.AES.encrypt(wallet.mnemonic, wallet.securityPassword).toString(),
-          id: CryptoJS.SHA256(wallet.mnemonic).toString(),
-          createdAt: Date.now(),
-        }
+        const walletToBeSaved =
+          wallet.type === 'mnemonic' && wallet.mnemonic
+            ? {
+                name: wallet.name,
+                mnemonic: CryptoJS.AES.encrypt(wallet.mnemonic, wallet.securityPassword).toString(),
+                id: CryptoJS.SHA256(wallet.mnemonic).toString(),
+                createdAt: Date.now(),
+                type: 'mnemonic',
+              }
+            : {
+                name: wallet.name,
+                id: `ledger-${Math.random()}`,
+                createdAt: Date.now(),
+                type: 'ledger',
+              }
         for (let i = 0; i < wallet.cryptos.length; i += 1) {
-          const address = await getWalletAddress(wallet.mnemonic, wallet.cryptos[i], 0)
+          const address =
+            wallet.type === 'mnemonic' && wallet.mnemonic
+              ? await getWalletAddress(wallet.mnemonic, wallet.cryptos[i], 0)
+              : wallet.addresses![i]
           const newAccount = await addAccount(password, {
             walletId: walletToBeSaved.id,
             address,
@@ -89,7 +102,7 @@ export const updateWallet = (
         if (wallet.name) {
           walletToBeUpdated.name = wallet.name
         }
-        if (wallet.securityPassword && wallet.newSecurityPassword) {
+        if (wallet.securityPassword && wallet.newSecurityPassword && walletToBeUpdated.mnemonic) {
           const mnemonic = await decryptMnemonic(
             walletToBeUpdated.mnemonic,
             wallet.securityPassword
@@ -161,6 +174,9 @@ export const viewMnemonicPhrase = (
         const wallet = wallets.find((w) => w.id === id)
         if (!wallet) {
           return reject(new Error('wallet not found'))
+        }
+        if (!wallet.mnemonic) {
+          return reject(new Error('no mnemonic'))
         }
         const mnemonic = await decryptMnemonic(wallet.mnemonic, securityPassword)
         return resolve(mnemonic)

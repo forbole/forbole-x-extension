@@ -4,8 +4,9 @@ export type Cryptos = keyof typeof cryptocurrencies
 
 export interface Wallet {
   id: string
+  type: 'mnemonic' | 'ledger'
   name: string
-  mnemonic: string
+  mnemonic?: string // For mnemonic type
   createdAt: number
 }
 
@@ -29,7 +30,9 @@ export interface CreateAccountParams {
 
 export interface CreateWalletParams {
   name: string
-  mnemonic: string
+  type: 'mnemonic' | 'ledger'
+  mnemonic?: string // For mnemonic type
+  addresses?: string[] // For ledger type
   cryptos: Cryptos[]
   securityPassword: string
 }
