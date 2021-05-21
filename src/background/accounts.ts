@@ -25,14 +25,16 @@ export const addAccount = (
     chrome.storage.local.get(['accounts', 'wallets'], async (result) => {
       try {
         const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
-        const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
-        const wallet = wallets.find((w) => w.id === account.walletId)
-        if (!wallet) {
-          throw new Error('wallet not found')
-        }
-        let { address = '', index } = account
-        if (wallet.mnemonic && (!address || index === undefined)) {
-          const mnemonic = await decryptMnemonic(wallet.mnemonic, securityPassword || '')
+        let { address, index } = account
+        if (!address || index === undefined) {
+          const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
+          const wallet = wallets.find((w) => w.id === account.walletId)
+          if (!wallet) {
+            throw new Error('wallet not found')
+          }
+          const mnemonic = wallet.mnemonic
+            ? await decryptMnemonic(wallet.mnemonic, securityPassword || '')
+            : undefined
           index =
             Math.max(
               -1,
@@ -40,12 +42,16 @@ export const addAccount = (
                 .filter((a) => a.walletId === account.walletId && a.crypto === account.crypto)
                 .map((a) => a.index)
             ) + 1
-          address = await getWalletAddress(mnemonic, account.crypto, index)
+          address =
+            mnemonic && !address ? await getWalletAddress(mnemonic, account.crypto, index) : address
         }
-        if (!address || index === undefined) {
-          throw new Error('invalid address or index')
+        const newAccount = {
+          ...account,
+          address: address || '',
+          index,
+          createdAt: Date.now(),
+          fav: false,
         }
-        const newAccount = { ...account, address, index, createdAt: Date.now(), fav: false }
         const encryptedAccountsString = CryptoJS.AES.encrypt(
           JSON.stringify([newAccount, ...(accounts || [])]),
           password
