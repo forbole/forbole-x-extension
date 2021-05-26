@@ -11,6 +11,7 @@ import {
   viewMnemonicPhraseBackup,
 } from './wallets'
 import getSequenceAndChainId from './misc/getSequenceAndChainId'
+import broadcastTransactions from './misc/broadcastTransactions'
 
 export const handleMessages = async (
   request: any,
@@ -159,6 +160,18 @@ export const handleMessages = async (
         request.data.gasFee,
         request.data.memo
       )
+      sendResponse(result)
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
+  } else if (request.event === 'broadcastTransactions') {
+    try {
+      const accounts = await getAccounts(request.data.password)
+      const account = accounts.find((a) => a.address === request.data.address)
+      if (!account) {
+        throw new Error('account not found')
+      }
+      const result = await broadcastTransactions(account.crypto, request.data.signed)
       sendResponse(result)
     } catch (err) {
       sendResponse({ err: err.message })
