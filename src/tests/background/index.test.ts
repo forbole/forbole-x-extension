@@ -1,13 +1,18 @@
 import { Secp256k1HdWallet } from '../../../@cosmjs/launchpad'
 import { handleMessages } from '../../background'
-import { addAccount, deleteAccount, getAccounts, updateAccount } from '../../background/accounts'
+import {
+  addAccount,
+  deleteAccount,
+  getAccounts,
+  updateAccount,
+} from '../../background/models/accounts'
 import {
   addWallet,
   deleteWallet,
   getWallets,
   updateWallet,
   viewMnemonicPhrase,
-} from '../../background/wallets'
+} from '../../background/models/wallets'
 
 const wallet = {
   id: '123',

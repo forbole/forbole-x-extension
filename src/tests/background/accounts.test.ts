@@ -2,7 +2,12 @@ import CryptoJS from 'crypto-js'
 import decryptStorage from '../../background/misc/decryptStorage'
 import getWalletAddress from '../../background/misc/getWalletAddress'
 import decryptMnemonic from '../../background/misc/decryptMnemonic'
-import { addAccount, deleteAccount, getAccounts, updateAccount } from '../../background/accounts'
+import {
+  addAccount,
+  deleteAccount,
+  getAccounts,
+  updateAccount,
+} from '../../background/models/accounts'
 import { CreateAccountParams } from '../../../types'
 
 const account = {

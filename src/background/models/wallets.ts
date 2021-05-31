@@ -1,8 +1,8 @@
 import CryptoJS from 'crypto-js'
-import decryptStorage from './misc/decryptStorage'
-import decryptMnemonic from './misc/decryptMnemonic'
-import { Wallet, Account, CreateWalletParams } from '../../types'
-import getWalletAddress from './misc/getWalletAddress'
+import decryptStorage from '../misc/decryptStorage'
+import decryptMnemonic from '../misc/decryptMnemonic'
+import { Wallet, Account, CreateWalletParams } from '../../../types'
+import getWalletAddress from '../misc/getWalletAddress'
 import { addAccount } from './accounts'
 
 export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]> =>
@@ -174,6 +174,9 @@ export const viewMnemonicPhrase = (
         const wallet = wallets.find((w) => w.id === id)
         if (!wallet) {
           return reject(new Error('wallet not found'))
+        }
+        if (wallet.type === 'ledger') {
+          return resolve('')
         }
         if (!wallet.mnemonic) {
           return reject(new Error('no mnemonic'))

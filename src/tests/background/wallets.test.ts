@@ -9,8 +9,8 @@ import {
   updateWallet,
   viewMnemonicPhrase,
   viewMnemonicPhraseBackup,
-} from '../../background/wallets'
-import { addAccount } from '../../background/accounts'
+} from '../../background/models/wallets'
+import { addAccount } from '../../background/models/accounts'
 import { CreateWalletParams } from '../../../types'
 
 const account = {

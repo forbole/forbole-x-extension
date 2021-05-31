@@ -1,8 +1,8 @@
 import CryptoJS from 'crypto-js'
-import decryptStorage from './misc/decryptStorage'
-import { Account, CreateAccountParams, Wallet } from '../../types'
-import decryptMnemonic from './misc/decryptMnemonic'
-import getWalletAddress from './misc/getWalletAddress'
+import decryptStorage from '../misc/decryptStorage'
+import { Account, CreateAccountParams, Wallet } from '../../../types'
+import decryptMnemonic from '../misc/decryptMnemonic'
+import getWalletAddress from '../misc/getWalletAddress'
 
 export const getAccounts = (password: string): Promise<Account[]> =>
   new Promise((resolve, reject) =>
