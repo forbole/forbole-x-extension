@@ -3,9 +3,10 @@ import { stringToPath } from '@cosmjs/crypto'
 import { LedgerSigner } from '@cosmjs/ledger-amino'
 import { SigningStargateClient } from '@cosmjs/stargate'
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
-import cryptocurrencies from './cryptocurrencies.json'
+import formatTransactionMsg from '../background/misc/formatTransactionMsg'
+import cryptocurrencies from '../background/misc/cryptocurrencies.json'
 
-const signAndBroadcastTransactions = async (
+const signAndBroadcastTransaction = async (
   mnemonic: string,
   crypto: keyof typeof cryptocurrencies,
   index: number,
@@ -13,7 +14,10 @@ const signAndBroadcastTransactions = async (
 ): Promise<any> => {
   let signer
   const signerOptions = {
-    hdPaths: [stringToPath(`m/44'/${cryptocurrencies[crypto].coinType}'/0'/0/${index}`)],
+    hdPaths: [
+      // Ledger Cosmos app only accept 118 coin type
+      stringToPath(`m/44'/${mnemonic ? cryptocurrencies[crypto].coinType : 118}'/0'/0/${index}`),
+    ],
     prefix: cryptocurrencies[crypto].prefix,
   }
   if (mnemonic) {
@@ -29,11 +33,11 @@ const signAndBroadcastTransactions = async (
   )
   const result = await client.signAndBroadcast(
     accounts[0].address,
-    transactionData.msgs,
-    transactionData.gas_fee,
+    transactionData.msgs.map((msg: any) => formatTransactionMsg(msg)),
+    transactionData.fee,
     transactionData.memo
   )
   return result
 }
 
-export default signAndBroadcastTransactions
+export default signAndBroadcastTransaction

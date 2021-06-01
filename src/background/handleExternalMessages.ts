@@ -1,7 +1,6 @@
 import CryptoJS from 'crypto-js'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
 import { addAccount, deleteAccount, getAccounts, updateAccount } from './models/accounts'
-import signAndBroadcastTransactions from './misc/signAndBroadcastTransactions'
 import {
   addWallet,
   deleteWallet,
@@ -11,7 +10,6 @@ import {
   viewMnemonicPhraseBackup,
 } from './models/wallets'
 import getSequenceAndChainId from './misc/getSequenceAndChainId'
-import broadcastTransactions from './misc/broadcastTransactions'
 
 const handleExternalMessages = async (
   request: any,
@@ -138,40 +136,6 @@ const handleExternalMessages = async (
       sendResponse(result)
     } catch (err) {
       console.log(err)
-      sendResponse({ err: err.message })
-    }
-  } else if (request.event === 'signAndBroadcastTransactions') {
-    try {
-      const accounts = await getAccounts(request.data.password)
-      const account = accounts.find((a) => a.address === request.data.address)
-      if (!account) {
-        throw new Error('account not found')
-      }
-      const mnemonic = await viewMnemonicPhrase(
-        request.data.password,
-        account.walletId,
-        request.data.securityPassword
-      )
-      const result = await signAndBroadcastTransactions(
-        mnemonic,
-        account.crypto,
-        account.index,
-        request.data.transactionData
-      )
-      sendResponse(result)
-    } catch (err) {
-      sendResponse({ err: err.message })
-    }
-  } else if (request.event === 'broadcastTransactions') {
-    try {
-      const accounts = await getAccounts(request.data.password)
-      const account = accounts.find((a) => a.address === request.data.address)
-      if (!account) {
-        throw new Error('account not found')
-      }
-      const result = await broadcastTransactions(account.crypto, request.data.signed)
-      sendResponse(result)
-    } catch (err) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'reset') {
