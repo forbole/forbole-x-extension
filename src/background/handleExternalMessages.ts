@@ -145,6 +145,8 @@ const handleExternalMessages = async (
     } catch (err) {
       sendResponse({ err: err.message })
     }
+  } else if (request.event === 'closeChromeExtension') {
+    chrome.windows.getCurrent((w) => chrome.windows.remove(w.id))
   } else {
     sendResponse({ err: 'unknown event' })
   }
