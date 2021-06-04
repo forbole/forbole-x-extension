@@ -34,7 +34,6 @@ import sendMsgToBackground from './misc/sendMsgToBackground'
   // Should only be accessed through Forbole X web app / Chrome Ext
   signAndBroadcastTransaction: async (
     extId: string,
-    origin: string,
     password: string,
     address: string,
     transactionData: any,
