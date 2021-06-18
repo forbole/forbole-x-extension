@@ -2,6 +2,6 @@
   "DSM": {
     "coinType": 852,
     "prefix": "desmos",
-    "rpcEndpoint": "http://rpc.morpheus.desmos.network:26657"
+    "rpcEndpoint": "https://rpc.morpheus.desmos.network:26657"
   }
 }

@@ -9,14 +9,25 @@ const openChromeExtension = (params: any) => {
       query[key] = JSON.stringify(params[key])
     }
   })
-  chrome.windows.create({
-    url: qs.stringifyUrl({ url: 'index.html', query }),
-    type: 'popup',
-    width: 520,
-    height: 600,
-    top: 0,
-    left: 0,
-  })
+  chrome.windows.create(
+    {
+      url: qs.stringifyUrl({ url: 'index.html', query }),
+      type: 'popup',
+      width: 520,
+      height: 620,
+      top: 0,
+      left: 0,
+    },
+    (window) => {
+      if (window) {
+        chrome.windows.update(window.id, {
+          width: 520,
+          height: 620,
+          focused: true,
+        })
+      }
+    }
+  )
 }
 
 export default openChromeExtension
