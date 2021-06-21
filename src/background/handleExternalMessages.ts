@@ -9,7 +9,6 @@ import {
   viewMnemonicPhrase,
   viewMnemonicPhraseBackup,
 } from './models/wallets'
-import getSequenceAndChainId from './misc/getSequenceAndChainId'
 
 const handleExternalMessages = async (
   request: any,
@@ -128,14 +127,6 @@ const handleExternalMessages = async (
       )
       sendResponse({ mnemonic })
     } catch (err) {
-      sendResponse({ err: err.message })
-    }
-  } else if (request.event === 'getSequenceAndChainId') {
-    try {
-      const result = await getSequenceAndChainId(request.data.address, request.data.crypto)
-      sendResponse(result)
-    } catch (err) {
-      console.log(err)
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'reset') {
