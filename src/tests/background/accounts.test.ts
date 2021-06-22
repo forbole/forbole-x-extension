@@ -1,6 +1,5 @@
 import CryptoJS from 'crypto-js'
 import decryptStorage from '../../background/misc/decryptStorage'
-import getWalletAddress from '../../background/misc/getWalletAddress'
 import decryptMnemonic from '../../background/misc/decryptMnemonic'
 import {
   addAccount,
@@ -30,7 +29,6 @@ const password = '123123'
 
 jest.mock('../../background/misc/decryptStorage')
 jest.mock('../../background/misc/decryptMnemonic')
-jest.mock('../../background/misc/getWalletAddress')
 jest.mock('crypto-js', () => ({
   AES: {
     encrypt: jest.fn(),
@@ -75,7 +73,7 @@ describe('background: accounts', () => {
       address: 'new address',
       index: 1,
     }
-    const acc = await addAccount(password, newAccount, password)
+    const acc = await addAccount(password, newAccount)
     expect(acc).toStrictEqual({ ...newAccount, fav: false, createdAt: 123 })
     expect(chrome.storage.local.set).toBeCalledWith(
       { accounts: JSON.stringify([acc, account]) },
@@ -93,17 +91,16 @@ describe('background: accounts', () => {
     ;(decryptMnemonic as jest.Mock).mockImplementation((a) => Promise.resolve(a))
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
     jest.spyOn(Date, 'now').mockReturnValueOnce(123)
-    ;(getWalletAddress as jest.Mock).mockResolvedValueOnce('mock address')
     const newAccount: CreateAccountParams = {
       walletId: '123',
       name: 'new wallet',
       crypto: 'DSM',
+      address: 'new address',
+      index: 1,
     }
-    const acc = await addAccount(password, newAccount, password)
+    const acc = await addAccount(password, newAccount)
     expect(acc).toStrictEqual({
       ...newAccount,
-      address: 'mock address',
-      index: 1,
       fav: false,
       createdAt: 123,
     })
@@ -123,14 +120,15 @@ describe('background: accounts', () => {
     ;(decryptMnemonic as jest.Mock).mockImplementation((a) => Promise.resolve(a))
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
     jest.spyOn(Date, 'now').mockReturnValueOnce(123)
-    ;(getWalletAddress as jest.Mock).mockResolvedValueOnce('mock address')
     const newAccount: CreateAccountParams = {
       walletId: '123123',
       name: 'new wallet',
       crypto: 'DSM',
+      address: 'new address',
+      index: 1,
     }
     try {
-      await addAccount(password, newAccount, password)
+      await addAccount(password, newAccount)
       expect(true).toBe(false)
     } catch (err) {
       expect(err).toStrictEqual(new Error('wallet not found'))
@@ -149,7 +147,7 @@ describe('background: accounts', () => {
       index: 1,
     }
     try {
-      await addAccount(password, newAccount, password)
+      await addAccount(password, newAccount)
       expect(true).toBe(false)
     } catch (err) {
       expect(err).toStrictEqual(new Error('incorrect password'))

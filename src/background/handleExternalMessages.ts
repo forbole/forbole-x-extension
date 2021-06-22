@@ -58,11 +58,7 @@ const handleExternalMessages = async (
     }
   } else if (request.event === 'addAccount') {
     try {
-      const account = await addAccount(
-        request.data.password,
-        request.data.account,
-        request.data.securityPassword
-      )
+      const account = await addAccount(request.data.password, request.data.account)
       sendResponse({ account })
     } catch (err) {
       sendResponse({ err: err.message })

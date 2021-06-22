@@ -2,7 +2,6 @@ import CryptoJS from 'crypto-js'
 import decryptStorage from '../misc/decryptStorage'
 import decryptMnemonic from '../misc/decryptMnemonic'
 import { Wallet, Account, CreateWalletParams } from '../../../types'
-import getWalletAddress from '../misc/getWalletAddress'
 import { addAccount } from './accounts'
 
 export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]> =>
@@ -49,10 +48,7 @@ export const addWallet = (
                 type: 'ledger',
               }
         for (let i = 0; i < wallet.cryptos.length; i += 1) {
-          const address =
-            wallet.type === 'mnemonic' && wallet.mnemonic
-              ? await getWalletAddress(wallet.mnemonic, wallet.cryptos[i], 0)
-              : wallet.addresses![i]
+          const address = wallet.addresses[i]
           const newAccount = await addAccount(password, {
             walletId: walletToBeSaved.id,
             address,

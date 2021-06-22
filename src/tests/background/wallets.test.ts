@@ -1,6 +1,5 @@
 import CryptoJS from 'crypto-js'
 import decryptStorage from '../../background/misc/decryptStorage'
-import getWalletAddress from '../../background/misc/getWalletAddress'
 import decryptMnemonic from '../../background/misc/decryptMnemonic'
 import {
   getWallets,
@@ -34,7 +33,6 @@ const password = '123123'
 
 jest.mock('../../background/misc/decryptStorage')
 jest.mock('../../background/misc/decryptMnemonic')
-jest.mock('../../background/misc/getWalletAddress')
 jest.mock('crypto-js', () => ({
   AES: {
     encrypt: jest.fn(),
@@ -84,12 +82,13 @@ describe('background: wallets', () => {
     ;(CryptoJS.SHA256 as jest.Mock).mockImplementationOnce((a) => `hashed-${a}`)
     jest.spyOn(Date, 'now').mockReturnValueOnce(123)
     ;(addAccount as jest.Mock).mockResolvedValueOnce(account)
-    ;(getWalletAddress as jest.Mock).mockResolvedValueOnce(account.address)
     const newWallet: CreateWalletParams = {
       name: 'wallet 2',
+      type: 'mnemonic',
       mnemonic: 'mnemonic 2',
       securityPassword: '123123',
-      cryptos: ['ATOM'],
+      cryptos: ['DSM'],
+      addresses: [account.address],
     }
     const result = await addWallet(password, newWallet)
     expect(result).toStrictEqual({
@@ -122,9 +121,11 @@ describe('background: wallets', () => {
     ;(decryptStorage as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
     const newWallet: CreateWalletParams = {
       name: 'wallet 2',
+      type: 'mnemonic',
       mnemonic: 'mnemonic 2',
       securityPassword: '123123',
-      cryptos: ['ATOM'],
+      cryptos: ['DSM'],
+      addresses: [account.address],
     }
     try {
       await addWallet(password, newWallet)

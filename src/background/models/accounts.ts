@@ -1,8 +1,6 @@
 import CryptoJS from 'crypto-js'
 import decryptStorage from '../misc/decryptStorage'
-import { Account, CreateAccountParams, Wallet } from '../../../types'
-import decryptMnemonic from '../misc/decryptMnemonic'
-import getWalletAddress from '../misc/getWalletAddress'
+import { Account, CreateAccountParams } from '../../../types'
 
 export const getAccounts = (password: string): Promise<Account[]> =>
   new Promise((resolve, reject) =>
@@ -16,39 +14,13 @@ export const getAccounts = (password: string): Promise<Account[]> =>
     })
   )
 
-export const addAccount = (
-  password: string,
-  account: CreateAccountParams,
-  securityPassword?: string
-): Promise<Account> =>
+export const addAccount = (password: string, account: CreateAccountParams): Promise<Account> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['accounts', 'wallets'], async (result) => {
       try {
         const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
-        let { address, index } = account
-        if (!address || index === undefined) {
-          const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
-          const wallet = wallets.find((w) => w.id === account.walletId)
-          if (!wallet) {
-            throw new Error('wallet not found')
-          }
-          const mnemonic = wallet.mnemonic
-            ? await decryptMnemonic(wallet.mnemonic, securityPassword || '')
-            : undefined
-          index =
-            Math.max(
-              -1,
-              ...accounts
-                .filter((a) => a.walletId === account.walletId && a.crypto === account.crypto)
-                .map((a) => a.index)
-            ) + 1
-          address =
-            mnemonic && !address ? await getWalletAddress(mnemonic, account.crypto, index) : address
-        }
         const newAccount = {
           ...account,
-          address: address || '',
-          index,
           createdAt: Date.now(),
           fav: false,
         }

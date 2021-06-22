@@ -22,8 +22,8 @@ export interface Account {
 
 export interface CreateAccountParams {
   walletId: string
-  address?: string
-  index?: number
+  address: string
+  index: number
   name: string
   crypto: Cryptos
 }
@@ -32,7 +32,7 @@ export interface CreateWalletParams {
   name: string
   type: 'mnemonic' | 'ledger'
   mnemonic?: string // For mnemonic type
-  addresses?: string[] // For ledger type
+  addresses: string[]
   cryptos: Cryptos[]
   securityPassword: string
 }
