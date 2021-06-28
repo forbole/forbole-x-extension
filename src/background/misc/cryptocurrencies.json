@@ -1,7 +1,0 @@
-{
-  "DSM": {
-    "coinType": 852,
-    "prefix": "desmos",
-    "rpcEndpoint": "https://rpc.morpheus.desmos.network:26657"
-  }
-}

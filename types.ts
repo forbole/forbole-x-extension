@@ -1,7 +1,3 @@
-import cryptocurrencies from './src/background/misc/cryptocurrencies.json'
-
-export type Cryptos = keyof typeof cryptocurrencies
-
 export interface Wallet {
   id: string
   type: 'mnemonic' | 'ledger'
@@ -13,7 +9,7 @@ export interface Wallet {
 export interface Account {
   walletId: string
   address: string
-  crypto: Cryptos
+  crypto: string
   index: number
   name: string
   fav: boolean
@@ -25,7 +21,7 @@ export interface CreateAccountParams {
   address: string
   index: number
   name: string
-  crypto: Cryptos
+  crypto: string
 }
 
 export interface CreateWalletParams {
@@ -33,6 +29,6 @@ export interface CreateWalletParams {
   type: 'mnemonic' | 'ledger'
   mnemonic?: string // For mnemonic type
   addresses: string[]
-  cryptos: Cryptos[]
+  cryptos: string[]
   securityPassword: string
 }
