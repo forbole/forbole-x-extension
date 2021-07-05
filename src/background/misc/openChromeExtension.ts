@@ -20,11 +20,15 @@ const openChromeExtension = (params: any) => {
     },
     (window) => {
       if (window) {
-        chrome.windows.update(window.id, {
-          width: 520,
-          height: 620,
-          focused: true,
-        })
+        setTimeout(
+          () =>
+            chrome.windows.update(window.id, {
+              width: 520,
+              height: 620,
+              focused: true,
+            }),
+          1000
+        )
       }
     }
   )
