@@ -1,8 +1,8 @@
 {
-  "name": "Forbole Portal",
+  "name": "Forbole X",
   "version": "1.0.1",
   "manifest_version": 2,
-  "description": "Forbole Portal Chrome Extension",
+  "description": "A comprehensive multi-crypto management tool in your browser",
   "icons": {
     "512": "logo512.png"
   },
