@@ -7,7 +7,7 @@ const App: React.FC = () => {
     ...qs.parse(window.location.search),
   }
   const url = qs.stringifyUrl({ url: `${process.env.REACT_APP_WEB_APP_BASE_URL}/wallets`, query })
-  return <iframe title="Forbole X" allow="usb;clipboard-write" height={600} width={520} src={url} />
+  return <iframe title="Forbole X" allow="hid;clipboard-write" height={600} width={520} src={url} />
 }
 
 export default App
