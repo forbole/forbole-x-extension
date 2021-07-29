@@ -9,6 +9,7 @@ import {
   viewMnemonicPhrase,
   viewMnemonicPhraseBackup,
 } from './models/wallets'
+import changeUnlockPassword from './misc/changeUnlockPassword'
 
 const handleExternalMessages = async (
   request: any,
@@ -128,6 +129,13 @@ const handleExternalMessages = async (
   } else if (request.event === 'reset') {
     try {
       chrome.storage.local.clear()
+      sendResponse({ success: true })
+    } catch (err) {
+      sendResponse({ err: err.message })
+    }
+  } else if (request.event === 'changeUnlockPassword') {
+    try {
+      await changeUnlockPassword(request.data.oldPassword, request.data.password)
       sendResponse({ success: true })
     } catch (err) {
       sendResponse({ err: err.message })
