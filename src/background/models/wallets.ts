@@ -26,7 +26,10 @@ export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]
 export const addWallet = (
   password: string,
   wallet: CreateWalletParams
-): Promise<{ wallet: { name: string; id: string; createdAt: number }; accounts: Account[] }> =>
+): Promise<{
+  wallet: { name: string; id: string; createdAt: number; type: string }
+  accounts: Account[]
+}> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['wallets'], async (result) => {
       try {
@@ -68,6 +71,7 @@ export const addWallet = (
               name: walletToBeSaved.name,
               id: walletToBeSaved.id,
               createdAt: walletToBeSaved.createdAt,
+              type: walletToBeSaved.type,
             },
             accounts: newAccounts,
           })
