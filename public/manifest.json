@@ -1,7 +1,7 @@
 {
   "name": "Forbole X",
   "version": "1.0.3",
-  "manifest_version": 3,
+  "manifest_version": 2,
   "description": "A comprehensive multi-crypto management tool in your browser",
   "icons": {
     "512": "logo512.png"
