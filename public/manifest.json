@@ -1,7 +1,7 @@
 {
   "name": "Forbole X",
-  "version": "1.0.3",
-  "manifest_version": 2,
+  "version": "1.0.4",
+  "manifest_version": 3,
   "description": "A comprehensive multi-crypto management tool in your browser",
   "icons": {
     "512": "logo512.png"
@@ -14,16 +14,22 @@
     "matches": ["*://localhost/*", "*://*.forbole.com/*"]
   },
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["contentScript.js"],
-      "all_frames": true
+      "js": ["contentScript.js"]
     }
   ],
-  "web_accessible_resources": ["scriptToInject.js"],
+  "web_accessible_resources": [
+    {
+      "resources": ["scriptToInject.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "permissions": ["storage", "hid"],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

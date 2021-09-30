@@ -6,7 +6,7 @@ function injectScript(file: any, node: any) {
   th.appendChild(s)
 }
 
-injectScript(chrome.extension.getURL('/scriptToInject.js'), 'body')
+injectScript(chrome.runtime.getURL('/scriptToInject.js'), 'body')
 
 window.addEventListener('message', async (e: any) => {
   if (e.data && e.data.target === 'Forbole X') {
