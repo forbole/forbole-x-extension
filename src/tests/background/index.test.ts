@@ -1,5 +1,5 @@
-import { Secp256k1HdWallet } from '../../../@cosmjs/launchpad'
-import { handleMessages } from '../../background'
+import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
+import handleMessages from '../../background/handleExternalMessages'
 import {
   addAccount,
   deleteAccount,
@@ -32,7 +32,7 @@ const password = '123123'
 
 const sendResponse = jest.fn()
 
-jest.mock('../../background/wallets', () => ({
+jest.mock('../../background/models/wallets', () => ({
   addWallet: jest.fn(),
   deleteWallet: jest.fn(),
   getWallets: jest.fn(),
@@ -41,15 +41,15 @@ jest.mock('../../background/wallets', () => ({
   viewMnemonicPhrase: jest.fn(),
 }))
 
-jest.mock('../../background/accounts', () => ({
+jest.mock('../../background/models/accounts', () => ({
   addAccount: jest.fn(),
   deleteAccount: jest.fn(),
   getAccounts: jest.fn(),
   updateAccount: jest.fn(),
 }))
 
-jest.mock('../../../@cosmjs/launchpad', () => ({
-  Secp256k1HdWallet: {
+jest.mock('@cosmjs/proto-signing', () => ({
+  DirectSecp256k1HdWallet: {
     generate: jest.fn(),
     fromMnemonic: jest.fn(),
   },
@@ -172,7 +172,7 @@ describe('background: handleMessages', () => {
       undefined,
       sendResponse
     )
-    expect(addAccount).toBeCalledWith(password, account, 'securityPassword')
+    expect(addAccount).toBeCalledWith(password, account)
     expect(sendResponse).toBeCalledWith({ account })
   })
   it('handles add account with error', async () => {
@@ -182,7 +182,7 @@ describe('background: handleMessages', () => {
       undefined,
       sendResponse
     )
-    expect(addAccount).toBeCalledWith(password, account, 'securityPassword')
+    expect(addAccount).toBeCalledWith(password, account)
     expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
   })
   it('handles update account', async () => {
@@ -226,29 +226,31 @@ describe('background: handleMessages', () => {
     expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
   })
   it('handles generate mnemonic', async () => {
-    ;(Secp256k1HdWallet.generate as jest.Mock).mockResolvedValueOnce({ mnemonic: 'mnemonic' })
+    ;(DirectSecp256k1HdWallet.generate as jest.Mock).mockResolvedValueOnce({ mnemonic: 'mnemonic' })
     await handleMessages({ event: 'generateMnemonic' }, undefined, sendResponse)
-    expect(Secp256k1HdWallet.generate).toBeCalledWith(24)
+    expect(DirectSecp256k1HdWallet.generate).toBeCalledWith(24)
     expect(sendResponse).toBeCalledWith({ mnemonic: 'mnemonic' })
   })
   it('handles verify mnemonic', async () => {
-    ;(Secp256k1HdWallet.fromMnemonic as jest.Mock).mockResolvedValueOnce({ mnemonic: 'mnemonic' })
+    ;(DirectSecp256k1HdWallet.fromMnemonic as jest.Mock).mockResolvedValueOnce({
+      mnemonic: 'mnemonic',
+    })
     await handleMessages(
       { event: 'verifyMnemonic', data: { mnemonic: 'mnemonic' } },
       undefined,
       sendResponse
     )
-    expect(Secp256k1HdWallet.fromMnemonic).toBeCalledWith('mnemonic')
+    expect(DirectSecp256k1HdWallet.fromMnemonic).toBeCalledWith('mnemonic')
     expect(sendResponse).toBeCalledWith({ mnemonic: 'mnemonic' })
   })
   it('handles verify mnemonic with error', async () => {
-    ;(Secp256k1HdWallet.fromMnemonic as jest.Mock).mockRejectedValueOnce(new Error())
+    ;(DirectSecp256k1HdWallet.fromMnemonic as jest.Mock).mockRejectedValueOnce(new Error())
     await handleMessages(
       { event: 'verifyMnemonic', data: { mnemonic: 'mnemonic' } },
       undefined,
       sendResponse
     )
-    expect(Secp256k1HdWallet.fromMnemonic).toBeCalledWith('mnemonic')
+    expect(DirectSecp256k1HdWallet.fromMnemonic).toBeCalledWith('mnemonic')
     expect(sendResponse).toBeCalledWith({ err: 'invalid mnemonic' })
   })
   it('handles view mnemonic phrase', async () => {

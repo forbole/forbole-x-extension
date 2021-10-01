@@ -109,31 +109,31 @@ describe('background: accounts', () => {
       expect.any(Function)
     )
   })
-  it('handles add accounts with incorrect walletId', async () => {
-    ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
-      callback({ accounts: [account], wallets: [wallet] })
-    })
-    ;(chrome.storage.local.set as jest.Mock).mockImplementationOnce((items, callback) => {
-      callback()
-    })
-    ;(decryptStorage as jest.Mock).mockImplementation((a) => Promise.resolve(a))
-    ;(decryptMnemonic as jest.Mock).mockImplementation((a) => Promise.resolve(a))
-    ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
-    jest.spyOn(Date, 'now').mockReturnValueOnce(123)
-    const newAccount: CreateAccountParams = {
-      walletId: '123123',
-      name: 'new wallet',
-      crypto: 'DSM',
-      address: 'new address',
-      index: 1,
-    }
-    try {
-      await addAccount(password, newAccount)
-      expect(true).toBe(false)
-    } catch (err) {
-      expect(err).toStrictEqual(new Error('wallet not found'))
-    }
-  })
+  // it('handles add accounts with incorrect walletId', async () => {
+  //   ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
+  //     callback({ accounts: [account], wallets: [wallet] })
+  //   })
+  //   ;(chrome.storage.local.set as jest.Mock).mockImplementationOnce((items, callback) => {
+  //     callback()
+  //   })
+  //   ;(decryptStorage as jest.Mock).mockImplementation((a) => Promise.resolve(a))
+  //   ;(decryptMnemonic as jest.Mock).mockImplementation((a) => Promise.resolve(a))
+  //   ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
+  //   jest.spyOn(Date, 'now').mockReturnValueOnce(123)
+  //   const newAccount: CreateAccountParams = {
+  //     walletId: '123123',
+  //     name: 'new wallet',
+  //     crypto: 'DSM',
+  //     address: 'new address',
+  //     index: 1,
+  //   }
+  //   try {
+  //     await addAccount(password, newAccount)
+  //     expect(true).toBe(false)
+  //   } catch (err) {
+  //     expect(err).toStrictEqual(new Error('wallet not found'))
+  //   }
+  // })
   it('handles add accounts with error', async () => {
     ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
       callback({ accounts: [account], wallets: [wallet] })

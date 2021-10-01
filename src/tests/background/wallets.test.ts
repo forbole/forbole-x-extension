@@ -27,6 +27,7 @@ const wallet = {
   mnemonic: 'mnemonic',
   cryptos: ['ATOM'],
   createdAt: 123,
+  type: 'mnemonic',
 }
 
 const password = '123123'
@@ -39,7 +40,7 @@ jest.mock('crypto-js', () => ({
   },
   SHA256: jest.fn(),
 }))
-jest.mock('../../background/accounts', () => ({
+jest.mock('../../background/models/accounts', () => ({
   addAccount: jest.fn(),
 }))
 
@@ -55,6 +56,7 @@ describe('background: wallets', () => {
         id: wallet.id,
         name: wallet.name,
         createdAt: wallet.createdAt,
+        type: 'mnemonic',
       },
     ])
   })
@@ -96,6 +98,7 @@ describe('background: wallets', () => {
         name: newWallet.name,
         id: 'hashed-mnemonic 2',
         createdAt: 123,
+        type: 'mnemonic',
       },
       accounts: [account],
     })
@@ -107,6 +110,7 @@ describe('background: wallets', () => {
             mnemonic: newWallet.mnemonic,
             id: 'hashed-mnemonic 2',
             createdAt: 123,
+            type: 'mnemonic',
           },
           wallet,
         ]),
