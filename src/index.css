@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  overflow: hidden;
+}
+iframe {
+  border: none;
+}
+#root {
+  height: 600px;
+  width: 520px;
+  overflow: hidden;
+}

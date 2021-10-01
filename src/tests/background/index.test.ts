@@ -1,5 +1,18 @@
-import CryptoJS from 'crypto-js'
-import { decryptWallets, handleMessages } from '../../../background'
+import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
+import handleMessages from '../../background/handleExternalMessages'
+import {
+  addAccount,
+  deleteAccount,
+  getAccounts,
+  updateAccount,
+} from '../../background/models/accounts'
+import {
+  addWallet,
+  deleteWallet,
+  getWallets,
+  updateWallet,
+  viewMnemonicPhrase,
+} from '../../background/models/wallets'
 
 const wallet = {
   id: '123',
@@ -7,111 +20,264 @@ const wallet = {
   mnemonic: 'mnemonic',
   cryptos: ['ATOM'],
 }
+const account = {
+  walletId: '123',
+  name: 'account',
+  address: 'address',
+  crypto: 'ATOM',
+  index: 0,
+  fav: false,
+}
 const password = '123123'
-const encryptedWalletString = CryptoJS.AES.encrypt(JSON.stringify([wallet]), password).toString()
 
-describe('background: decryptWallets', () => {
-  it('decrypts encrypted wallets string and parse JSON', () => {
-    const result = decryptWallets(encryptedWalletString, password)
-    expect(result).toStrictEqual([wallet])
-  })
-  it('returns null when encrypted string is invalid', () => {
-    const result = decryptWallets('invalid string', password)
-    expect(result).toBe(null)
-  })
-})
+const sendResponse = jest.fn()
+
+jest.mock('../../background/models/wallets', () => ({
+  addWallet: jest.fn(),
+  deleteWallet: jest.fn(),
+  getWallets: jest.fn(),
+  updateWallet: jest.fn(),
+  verifySecurityPassword: jest.fn(),
+  viewMnemonicPhrase: jest.fn(),
+}))
+
+jest.mock('../../background/models/accounts', () => ({
+  addAccount: jest.fn(),
+  deleteAccount: jest.fn(),
+  getAccounts: jest.fn(),
+  updateAccount: jest.fn(),
+}))
+
+jest.mock('@cosmjs/proto-signing', () => ({
+  DirectSecp256k1HdWallet: {
+    generate: jest.fn(),
+    fromMnemonic: jest.fn(),
+  },
+}))
 
 describe('background: handleMessages', () => {
-  it('handles ping for first time user', () => {
+  it('handles ping for first time user', async () => {
     ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
       callback({})
     })
-    handleMessages({ event: 'ping' }, undefined, (result) => {
-      expect(result).toStrictEqual({
-        isFirstTimeUser: true,
-      })
+    await handleMessages({ event: 'ping' }, undefined, sendResponse)
+    expect(sendResponse).toBeCalledWith({
+      isFirstTimeUser: true,
     })
   })
-  it('handles ping for non first time user', () => {
+  it('handles ping for non first time user', async () => {
     ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
       callback({ wallets: '123123' })
     })
-    handleMessages({ event: 'ping' }, undefined, (result) => {
-      expect(result).toStrictEqual({
-        isFirstTimeUser: false,
-      })
+    await handleMessages({ event: 'ping' }, undefined, sendResponse)
+    expect(sendResponse).toBeCalledWith({
+      isFirstTimeUser: false,
     })
   })
-  it('handles get wallets for correct password', () => {
-    ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
-      callback({ wallets: encryptedWalletString })
-    })
-    handleMessages({ event: 'getWallets', data: { password } }, undefined, (result) => {
-      const { mnemonic, ...walletToBeReturned } = wallet
-      expect(result).toStrictEqual({
-        wallets: [walletToBeReturned],
-      })
+  it('handles get wallets', async () => {
+    ;(getWallets as jest.Mock).mockResolvedValueOnce([])
+    await handleMessages({ event: 'getWallets', data: { password } }, undefined, sendResponse)
+    expect(getWallets).toBeCalledWith(password)
+    expect(sendResponse).toBeCalledWith({
+      wallets: [],
     })
   })
-  it('handles get wallets for incorrect password', () => {
-    ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
-      callback({ wallets: encryptedWalletString })
-    })
-    handleMessages({ event: 'getWallets', data: { password: '123' } }, undefined, (result) => {
-      expect(result).toStrictEqual({ err: 'incorrect password' })
+  it('handles get wallets with error', async () => {
+    ;(getWallets as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages({ event: 'getWallets', data: { password } }, undefined, sendResponse)
+    expect(getWallets).toBeCalledWith(password)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles add wallet', async () => {
+    ;(addWallet as jest.Mock).mockResolvedValueOnce({ wallet, accounts: [] })
+    await handleMessages(
+      { event: 'addWallet', data: { password, wallet } },
+      undefined,
+      sendResponse
+    )
+    expect(addWallet).toBeCalledWith(password, wallet)
+    expect(sendResponse).toBeCalledWith({
+      wallet,
+      accounts: [],
     })
   })
-  it('handles add wallet for correct password', () => {
-    ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
-      callback({ wallets: encryptedWalletString })
+  it('handles add wallet with error', async () => {
+    ;(addWallet as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages(
+      { event: 'addWallet', data: { password, wallet } },
+      undefined,
+      sendResponse
+    )
+    expect(addWallet).toBeCalledWith(password, wallet)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles update wallet', async () => {
+    ;(updateWallet as jest.Mock).mockResolvedValueOnce(wallet)
+    await handleMessages(
+      { event: 'updateWallet', data: { password, id: wallet.id, wallet } },
+      undefined,
+      sendResponse
+    )
+    expect(updateWallet).toBeCalledWith(password, wallet.id, wallet)
+    expect(sendResponse).toBeCalledWith({
+      wallet,
     })
-    handleMessages(
+  })
+  it('handles update wallet with error', async () => {
+    ;(updateWallet as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages(
+      { event: 'updateWallet', data: { password, id: wallet.id, wallet } },
+      undefined,
+      sendResponse
+    )
+    expect(updateWallet).toBeCalledWith(password, wallet.id, wallet)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles delete wallet', async () => {
+    ;(deleteWallet as jest.Mock).mockResolvedValueOnce({ success: true })
+    await handleMessages(
+      { event: 'deleteWallet', data: { password, id: wallet.id } },
+      undefined,
+      sendResponse
+    )
+    expect(deleteWallet).toBeCalledWith(password, wallet.id)
+    expect(sendResponse).toBeCalledWith({ success: true })
+  })
+  it('handles delete wallet with error', async () => {
+    ;(deleteWallet as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages(
+      { event: 'deleteWallet', data: { password, id: wallet.id } },
+      undefined,
+      sendResponse
+    )
+    expect(deleteWallet).toBeCalledWith(password, wallet.id)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles get accounts', async () => {
+    ;(getAccounts as jest.Mock).mockResolvedValueOnce([])
+    await handleMessages({ event: 'getAccounts', data: { password } }, undefined, sendResponse)
+    expect(getAccounts).toBeCalledWith(password)
+    expect(sendResponse).toBeCalledWith({ accounts: [] })
+  })
+  it('handles get accounts with error', async () => {
+    ;(getAccounts as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages({ event: 'getAccounts', data: { password } }, undefined, sendResponse)
+    expect(getAccounts).toBeCalledWith(password)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles add account', async () => {
+    ;(addAccount as jest.Mock).mockResolvedValueOnce(account)
+    await handleMessages(
+      { event: 'addAccount', data: { password, account, securityPassword: 'securityPassword' } },
+      undefined,
+      sendResponse
+    )
+    expect(addAccount).toBeCalledWith(password, account)
+    expect(sendResponse).toBeCalledWith({ account })
+  })
+  it('handles add account with error', async () => {
+    ;(addAccount as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages(
+      { event: 'addAccount', data: { password, account, securityPassword: 'securityPassword' } },
+      undefined,
+      sendResponse
+    )
+    expect(addAccount).toBeCalledWith(password, account)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles update account', async () => {
+    ;(updateAccount as jest.Mock).mockResolvedValueOnce(account)
+    await handleMessages(
+      { event: 'updateAccount', data: { password, account, address: account.address } },
+      undefined,
+      sendResponse
+    )
+    expect(updateAccount).toBeCalledWith(password, account.address, account)
+    expect(sendResponse).toBeCalledWith({ account })
+  })
+  it('handles update account with error', async () => {
+    ;(updateAccount as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages(
+      { event: 'updateAccount', data: { password, account, address: account.address } },
+      undefined,
+      sendResponse
+    )
+    expect(updateAccount).toBeCalledWith(password, account.address, account)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles delete account', async () => {
+    ;(deleteAccount as jest.Mock).mockResolvedValueOnce({ success: true })
+    await handleMessages(
+      { event: 'deleteAccount', data: { password, address: account.address } },
+      undefined,
+      sendResponse
+    )
+    expect(deleteAccount).toBeCalledWith(password, account.address)
+    expect(sendResponse).toBeCalledWith({ success: true })
+  })
+  it('handles delete wallet with error', async () => {
+    ;(deleteAccount as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages(
+      { event: 'deleteAccount', data: { password, address: account.address } },
+      undefined,
+      sendResponse
+    )
+    expect(deleteAccount).toBeCalledWith(password, account.address)
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
+  })
+  it('handles generate mnemonic', async () => {
+    ;(DirectSecp256k1HdWallet.generate as jest.Mock).mockResolvedValueOnce({ mnemonic: 'mnemonic' })
+    await handleMessages({ event: 'generateMnemonic' }, undefined, sendResponse)
+    expect(DirectSecp256k1HdWallet.generate).toBeCalledWith(24)
+    expect(sendResponse).toBeCalledWith({ mnemonic: 'mnemonic' })
+  })
+  it('handles verify mnemonic', async () => {
+    ;(DirectSecp256k1HdWallet.fromMnemonic as jest.Mock).mockResolvedValueOnce({
+      mnemonic: 'mnemonic',
+    })
+    await handleMessages(
+      { event: 'verifyMnemonic', data: { mnemonic: 'mnemonic' } },
+      undefined,
+      sendResponse
+    )
+    expect(DirectSecp256k1HdWallet.fromMnemonic).toBeCalledWith('mnemonic')
+    expect(sendResponse).toBeCalledWith({ mnemonic: 'mnemonic' })
+  })
+  it('handles verify mnemonic with error', async () => {
+    ;(DirectSecp256k1HdWallet.fromMnemonic as jest.Mock).mockRejectedValueOnce(new Error())
+    await handleMessages(
+      { event: 'verifyMnemonic', data: { mnemonic: 'mnemonic' } },
+      undefined,
+      sendResponse
+    )
+    expect(DirectSecp256k1HdWallet.fromMnemonic).toBeCalledWith('mnemonic')
+    expect(sendResponse).toBeCalledWith({ err: 'invalid mnemonic' })
+  })
+  it('handles view mnemonic phrase', async () => {
+    ;(viewMnemonicPhrase as jest.Mock).mockResolvedValueOnce('mnemonic')
+    await handleMessages(
       {
-        event: 'addWallet',
-        data: {
-          password,
-          wallet: {
-            name: 'new wallet',
-            cryptos: ['ATOM'],
-            mnemonic: 'new mnemonic',
-            securityPassword: '321321',
-          },
-        },
+        event: 'viewMnemonicPhrase',
+        data: { password, id: wallet.id, securityPassword: 'securityPassword' },
       },
       undefined,
-      (result) => {
-        expect(result).toStrictEqual({
-          wallet: {
-            name: 'new wallet',
-            id: CryptoJS.SHA256('new mnemonic').toString(),
-            cryptos: ['ATOM'],
-          },
-        })
-      }
+      sendResponse
     )
+    expect(viewMnemonicPhrase).toBeCalledWith(password, wallet.id, 'securityPassword')
+    expect(sendResponse).toBeCalledWith({ mnemonic: 'mnemonic' })
   })
-  it('handles add wallet for incorrect password', () => {
-    ;(chrome.storage.local.get as jest.Mock).mockImplementationOnce((items, callback) => {
-      callback({ wallets: encryptedWalletString })
-    })
-    handleMessages(
+  it('handles view mnemonic phrase with error', async () => {
+    ;(viewMnemonicPhrase as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
+    await handleMessages(
       {
-        event: 'addWallet',
-        data: {
-          password: '123',
-          wallet: {
-            name: 'new wallet',
-            cryptos: ['ATOM'],
-            mnemonic: 'new mnemonic',
-            securityPassword: '321321',
-          },
-        },
+        event: 'viewMnemonicPhrase',
+        data: { password, id: wallet.id, securityPassword: 'securityPassword' },
       },
       undefined,
-      (result) => {
-        expect(result).toStrictEqual({ err: 'incorrect password' })
-      }
+      sendResponse
     )
+    expect(viewMnemonicPhrase).toBeCalledWith(password, wallet.id, 'securityPassword')
+    expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
   })
 })
 
