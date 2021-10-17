@@ -10,6 +10,7 @@ export interface Account {
   walletId: string
   address: string
   crypto: string
+  account: number
   index: number
   name: string
   fav: boolean
@@ -19,6 +20,7 @@ export interface Account {
 export interface CreateAccountParams {
   walletId: string
   address: string
+  account: number
   index: number
   name: string
   crypto: string

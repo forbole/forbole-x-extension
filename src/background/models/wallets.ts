@@ -55,6 +55,7 @@ export const addWallet = (
           const newAccount = await addAccount(password, {
             walletId: walletToBeSaved.id,
             address,
+            account: 0,
             index: 0,
             name: wallet.cryptos[i],
             crypto: wallet.cryptos[i],
