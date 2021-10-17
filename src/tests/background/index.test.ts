@@ -26,6 +26,7 @@ const account = {
   address: 'address',
   crypto: 'ATOM',
   index: 0,
+  account: 0,
   fav: false,
 }
 const password = '123123'

@@ -72,6 +72,7 @@ describe('background: accounts', () => {
       crypto: 'DSM',
       address: 'new address',
       index: 1,
+      account: 0,
     }
     const acc = await addAccount(password, newAccount)
     expect(acc).toStrictEqual({ ...newAccount, fav: false, createdAt: 123 })
@@ -97,6 +98,7 @@ describe('background: accounts', () => {
       crypto: 'DSM',
       address: 'new address',
       index: 1,
+      account: 0,
     }
     const acc = await addAccount(password, newAccount)
     expect(acc).toStrictEqual({
@@ -145,6 +147,7 @@ describe('background: accounts', () => {
       crypto: 'DSM',
       address: 'new address',
       index: 1,
+      account: 0,
     }
     try {
       await addAccount(password, newAccount)
