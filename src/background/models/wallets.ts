@@ -56,6 +56,7 @@ export const addWallet = (
             walletId: walletToBeSaved.id,
             address,
             account: 0,
+            change: 0,
             index: 0,
             name: wallet.cryptos[i],
             crypto: wallet.cryptos[i],

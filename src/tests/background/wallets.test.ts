@@ -19,6 +19,7 @@ const account = {
   crypto: 'ATOM',
   index: 0,
   account: 0,
+  change: 0,
   fav: false,
 }
 
