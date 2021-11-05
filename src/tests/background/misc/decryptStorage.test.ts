@@ -21,7 +21,7 @@ describe('background: misc - decryptStorage', () => {
     try {
       await decryptStorage('storage', '123123')
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })

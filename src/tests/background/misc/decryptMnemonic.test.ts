@@ -21,7 +21,7 @@ describe('background: misc - decryptMnemonic', () => {
     try {
       await decryptMnemonic('mnemonic', '123123')
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -32,7 +32,7 @@ describe('background: misc - decryptMnemonic', () => {
     try {
       await decryptMnemonic('mnemonic', '123123')
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })

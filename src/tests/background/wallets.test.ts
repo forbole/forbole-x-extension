@@ -70,7 +70,7 @@ describe('background: wallets', () => {
     try {
       await getWallets(password)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -136,7 +136,7 @@ describe('background: wallets', () => {
     try {
       await addWallet(password, newWallet)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -200,7 +200,7 @@ describe('background: wallets', () => {
         newSecurityPassword: '321321',
       })
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('wallet not found'))
     }
   })
@@ -212,7 +212,7 @@ describe('background: wallets', () => {
     try {
       await updateWallet(password, account.address, { name: 'new name' })
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -264,7 +264,7 @@ describe('background: wallets', () => {
     try {
       await deleteWallet(password, wallet.id)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -287,7 +287,7 @@ describe('background: wallets', () => {
     try {
       await viewMnemonicPhrase(password, 'new id', '123123')
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('wallet not found'))
     }
   })
@@ -299,7 +299,7 @@ describe('background: wallets', () => {
     try {
       await viewMnemonicPhrase(password, 'new id', '123123')
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })

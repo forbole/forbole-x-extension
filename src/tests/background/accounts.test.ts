@@ -54,7 +54,7 @@ describe('background: accounts', () => {
     try {
       await getAccounts(password)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -136,7 +136,7 @@ describe('background: accounts', () => {
   //   try {
   //     await addAccount(password, newAccount)
   //     expect(true).toBe(false)
-  //   } catch (err) {
+  //   } catch (err: any) {
   //     expect(err).toStrictEqual(new Error('wallet not found'))
   //   }
   // })
@@ -157,7 +157,7 @@ describe('background: accounts', () => {
     try {
       await addAccount(password, newAccount)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -205,7 +205,7 @@ describe('background: accounts', () => {
     try {
       await updateAccount(password, account.address, { name: 'new name' })
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -250,7 +250,7 @@ describe('background: accounts', () => {
     try {
       await deleteAccount(password, account.address)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })

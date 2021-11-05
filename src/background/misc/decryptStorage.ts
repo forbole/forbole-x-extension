@@ -11,7 +11,7 @@ const decryptStorage = <P>(
         CryptoJS.AES.decrypt(encryptedString, password).toString(CryptoJS.enc.Utf8)
       )
       resolve(result)
-    } catch (err) {
+    } catch (err: any) {
       if (defaultValue) {
         resolve(defaultValue)
       } else {

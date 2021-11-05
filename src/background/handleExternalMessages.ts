@@ -26,42 +26,42 @@ const handleExternalMessages = async (
     try {
       const wallets = await getWallets(request.data.password)
       sendResponse({ wallets })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'addWallet') {
     try {
       const { wallet, accounts } = await addWallet(request.data.password, request.data.wallet)
       sendResponse({ wallet, accounts })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'updateWallet') {
     try {
       const wallet = await updateWallet(request.data.password, request.data.id, request.data.wallet)
       sendResponse({ wallet })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'deleteWallet') {
     try {
       const result = await deleteWallet(request.data.password, request.data.id)
       sendResponse(result)
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'getAccounts') {
     try {
       const accounts = await getAccounts(request.data.password)
       sendResponse({ accounts })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'addAccount') {
     try {
       const account = await addAccount(request.data.password, request.data.account)
       sendResponse({ account })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'updateAccount') {
@@ -69,17 +69,22 @@ const handleExternalMessages = async (
       const account = await updateAccount(
         request.data.password,
         request.data.address,
-        request.data.account
+        request.data.account,
+        request.data.walletId
       )
       sendResponse({ account })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'deleteAccount') {
     try {
-      const result = await deleteAccount(request.data.password, request.data.address)
+      const result = await deleteAccount(
+        request.data.password,
+        request.data.address,
+        request.data.walletId
+      )
       sendResponse(result)
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'generateMnemonic') {
@@ -89,7 +94,7 @@ const handleExternalMessages = async (
     try {
       const { mnemonic } = await DirectSecp256k1HdWallet.fromMnemonic(request.data.mnemonic)
       sendResponse({ mnemonic })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: 'invalid mnemonic' })
     }
   } else if (request.event === 'verifyMnemonicBackup') {
@@ -100,7 +105,7 @@ const handleExternalMessages = async (
       ).toString(CryptoJS.enc.Utf8)
       const { mnemonic } = await DirectSecp256k1HdWallet.fromMnemonic(mnemonicPhrase)
       sendResponse({ mnemonic })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: 'invalid mnemonic backup' })
     }
   } else if (request.event === 'viewMnemonicPhrase') {
@@ -111,7 +116,7 @@ const handleExternalMessages = async (
         request.data.securityPassword
       )
       sendResponse({ mnemonic })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'viewMnemonicPhraseBackup') {
@@ -123,21 +128,21 @@ const handleExternalMessages = async (
         request.data.backupPassword
       )
       sendResponse({ mnemonic })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'reset') {
     try {
       chrome.storage.local.clear()
       sendResponse({ success: true })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'changeUnlockPassword') {
     try {
       await changeUnlockPassword(request.data.oldPassword, request.data.password)
       sendResponse({ success: true })
-    } catch (err) {
+    } catch (err: any) {
       sendResponse({ err: err.message })
     }
   } else if (request.event === 'closeChromeExtension') {

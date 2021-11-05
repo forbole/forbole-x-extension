@@ -8,7 +8,7 @@ export const getAccounts = (password: string): Promise<Account[]> =>
       try {
         const accounts = await decryptStorage<Account[]>(result.accounts, password)
         resolve(accounts || [])
-      } catch (err) {
+      } catch (err: any) {
         reject(err)
       }
     })
@@ -31,7 +31,7 @@ export const addAccount = (password: string, account: CreateAccountParams): Prom
         chrome.storage.local.set({ accounts: encryptedAccountsString }, () => {
           resolve(newAccount)
         })
-      } catch (err) {
+      } catch (err: any) {
         reject(err)
       }
     })
@@ -40,7 +40,8 @@ export const addAccount = (password: string, account: CreateAccountParams): Prom
 export const updateAccount = (
   password: string,
   address: string,
-  account: Partial<Account>
+  account: Partial<Account>,
+  walletId: string
 ): Promise<Account> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['accounts'], async (result) => {
@@ -50,7 +51,7 @@ export const updateAccount = (
         const encryptedAccountsString = CryptoJS.AES.encrypt(
           JSON.stringify(
             accounts.map((a) => {
-              if (a.address === address) {
+              if (a.address === address && (!walletId || a.walletId === walletId)) {
                 newAccount = { ...a, ...account }
                 return newAccount
               }
@@ -62,18 +63,24 @@ export const updateAccount = (
         chrome.storage.local.set({ accounts: encryptedAccountsString }, () => {
           resolve(newAccount)
         })
-      } catch (err) {
+      } catch (err: any) {
         reject(err)
       }
     })
   )
 
-export const deleteAccount = (password: string, address: string): Promise<{ success: boolean }> =>
+export const deleteAccount = (
+  password: string,
+  address: string,
+  walletId: string
+): Promise<{ success: boolean }> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['accounts'], async (result) => {
       try {
         const accounts = await decryptStorage<Account[]>(result.accounts, password, [])
-        const filteredAccounts = accounts.filter((a) => a.address !== address)
+        const filteredAccounts = accounts.filter(
+          (a) => a.address !== address || walletId !== a.walletId
+        )
         if (!filteredAccounts.length) {
           return chrome.storage.local.remove('accounts', () => {
             resolve({ success: true })
@@ -86,7 +93,7 @@ export const deleteAccount = (password: string, address: string): Promise<{ succ
         return chrome.storage.local.set({ accounts: encryptedAccountsString }, () => {
           resolve({ success: true })
         })
-      } catch (err) {
+      } catch (err: any) {
         return reject(err)
       }
     })
