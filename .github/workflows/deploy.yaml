@@ -20,7 +20,7 @@ jobs:
           files: build/
           dest: chrome-ext.zip
       - name: Upload to Google Web Store
-        uses: Klemensas/chrome-extension-upload-action@1.4.1
+        uses: Passiverecords/chrome-extension-upload-action@1.4.1
         with:
           refresh-token: ${{ secrets.REFRESH_TOKEN }}
           client-id: ${{ secrets.CLIENT_ID }}
