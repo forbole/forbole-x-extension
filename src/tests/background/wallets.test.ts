@@ -85,6 +85,7 @@ describe('background: wallets', () => {
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementation((a) => a)
     ;(CryptoJS.SHA256 as jest.Mock).mockImplementationOnce((a) => `hashed-${a}`)
     jest.spyOn(Date, 'now').mockReturnValueOnce(123)
+    jest.spyOn(Math, 'random').mockReturnValueOnce(321)
     ;(addAccount as jest.Mock).mockResolvedValueOnce(account)
     const newWallet: CreateWalletParams = {
       name: 'wallet 2',
@@ -98,7 +99,7 @@ describe('background: wallets', () => {
     expect(result).toStrictEqual({
       wallet: {
         name: newWallet.name,
-        id: 'hashed-mnemonic 2',
+        id: 'hashed-mnemonic 2-321',
         createdAt: 123,
         type: 'mnemonic',
       },
@@ -110,7 +111,7 @@ describe('background: wallets', () => {
           {
             name: newWallet.name,
             mnemonic: newWallet.mnemonic,
-            id: 'hashed-mnemonic 2',
+            id: 'hashed-mnemonic 2-321',
             createdAt: 123,
             type: 'mnemonic',
           },
