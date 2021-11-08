@@ -20,11 +20,11 @@ jobs:
           files: build/
           dest: chrome-ext.zip
       - name: Upload to Google Web Store
-        uses: Passiverecords/chrome-extension-upload-action@1.4.1
+        uses: mnao305/chrome-extension-upload@1.1.1
         with:
           refresh-token: ${{ secrets.REFRESH_TOKEN }}
           client-id: ${{ secrets.CLIENT_ID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
-          file-name: chrome-ext.zip
-          app-id: ${{ secrets.APP_ID }}
+          file-path: chrome-ext.zip
+          extension-id: ${{ secrets.APP_ID }}
           publish: true
