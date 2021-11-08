@@ -24,6 +24,5 @@ jobs:
         with:
           refresh-token: ${{ secrets.REFRESH_TOKEN }}
           client-id: ${{ secrets.CLIENT_ID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
           file-path: chrome-ext.zip
           extension-id: ${{ secrets.APP_ID }}
