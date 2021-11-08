@@ -19,9 +19,12 @@ jobs:
         with:
           files: build/
           dest: chrome-ext.zip
-      - name: Upload to Google Drive
-        uses: satackey/action-google-drive@v1
+      - name: Upload to Google Web Store
+        uses: Klemensas/chrome-extension-upload-action@1.4.1
         with:
-          skicka-tokencache-json: ${{ secrets.SKICKA_TOKENCACHE_JSON }}
-          upload-from: chrome-ext.zip
-          upload-to: /forbole-portal-extension/chrome-ext.zip
+          refresh-token: ${{ secrets.REFRESH_TOKEN }}
+          client-id: ${{ secrets.CLIENT_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          file-name: chrome-ext.zip
+          app-id: ${{ secrets.APP_ID }}
+          publish: true
