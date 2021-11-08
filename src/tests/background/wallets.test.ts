@@ -18,6 +18,8 @@ const account = {
   address: 'address',
   crypto: 'ATOM',
   index: 0,
+  account: 0,
+  change: 0,
   fav: false,
 }
 
@@ -68,7 +70,7 @@ describe('background: wallets', () => {
     try {
       await getWallets(password)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -83,6 +85,7 @@ describe('background: wallets', () => {
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementation((a) => a)
     ;(CryptoJS.SHA256 as jest.Mock).mockImplementationOnce((a) => `hashed-${a}`)
     jest.spyOn(Date, 'now').mockReturnValueOnce(123)
+    jest.spyOn(Math, 'random').mockReturnValueOnce(321)
     ;(addAccount as jest.Mock).mockResolvedValueOnce(account)
     const newWallet: CreateWalletParams = {
       name: 'wallet 2',
@@ -96,7 +99,7 @@ describe('background: wallets', () => {
     expect(result).toStrictEqual({
       wallet: {
         name: newWallet.name,
-        id: 'hashed-mnemonic 2',
+        id: 'hashed-mnemonic 2-321',
         createdAt: 123,
         type: 'mnemonic',
       },
@@ -108,7 +111,7 @@ describe('background: wallets', () => {
           {
             name: newWallet.name,
             mnemonic: newWallet.mnemonic,
-            id: 'hashed-mnemonic 2',
+            id: 'hashed-mnemonic 2-321',
             createdAt: 123,
             type: 'mnemonic',
           },
@@ -134,7 +137,7 @@ describe('background: wallets', () => {
     try {
       await addWallet(password, newWallet)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -198,7 +201,7 @@ describe('background: wallets', () => {
         newSecurityPassword: '321321',
       })
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('wallet not found'))
     }
   })
@@ -210,7 +213,7 @@ describe('background: wallets', () => {
     try {
       await updateWallet(password, account.address, { name: 'new name' })
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -262,7 +265,7 @@ describe('background: wallets', () => {
     try {
       await deleteWallet(password, wallet.id)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -285,7 +288,7 @@ describe('background: wallets', () => {
     try {
       await viewMnemonicPhrase(password, 'new id', '123123')
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('wallet not found'))
     }
   })
@@ -297,7 +300,7 @@ describe('background: wallets', () => {
     try {
       await viewMnemonicPhrase(password, 'new id', '123123')
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })

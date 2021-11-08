@@ -17,7 +17,7 @@ export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]
             createdAt: w.createdAt,
           }))
         )
-      } catch (err) {
+      } catch (err: any) {
         reject(err)
       }
     })
@@ -40,7 +40,7 @@ export const addWallet = (
             ? {
                 name: wallet.name,
                 mnemonic: CryptoJS.AES.encrypt(wallet.mnemonic, wallet.securityPassword).toString(),
-                id: CryptoJS.SHA256(wallet.mnemonic).toString(),
+                id: `${CryptoJS.SHA256(wallet.mnemonic).toString()}-${Math.random()}`,
                 createdAt: Date.now(),
                 type: 'mnemonic',
               }
@@ -55,6 +55,8 @@ export const addWallet = (
           const newAccount = await addAccount(password, {
             walletId: walletToBeSaved.id,
             address,
+            account: 0,
+            change: 0,
             index: 0,
             name: wallet.cryptos[i],
             crypto: wallet.cryptos[i],
@@ -76,7 +78,7 @@ export const addWallet = (
             accounts: newAccounts,
           })
         })
-      } catch (err) {
+      } catch (err: any) {
         reject(err)
       }
     })
@@ -123,7 +125,7 @@ export const updateWallet = (
             createdAt: walletToBeUpdated.createdAt,
           })
         })
-      } catch (err) {
+      } catch (err: any) {
         return reject(err)
       }
     })
@@ -156,7 +158,7 @@ export const deleteWallet = (password: string, id: string): Promise<{ success: b
             resolve({ success: true })
           }
         )
-      } catch (err) {
+      } catch (err: any) {
         return reject(err)
       }
     })
@@ -183,7 +185,7 @@ export const viewMnemonicPhrase = (
         }
         const mnemonic = await decryptMnemonic(wallet.mnemonic, securityPassword)
         return resolve(mnemonic)
-      } catch (err) {
+      } catch (err: any) {
         return reject(new Error('incorrect password'))
       }
     })

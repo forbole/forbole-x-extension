@@ -14,6 +14,8 @@ const account = {
   name: 'account',
   address: 'address',
   crypto: 'DSM',
+  account: 0,
+  change: 0,
   index: 0,
   fav: false,
 }
@@ -52,7 +54,7 @@ describe('background: accounts', () => {
     try {
       await getAccounts(password)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -72,6 +74,8 @@ describe('background: accounts', () => {
       crypto: 'DSM',
       address: 'new address',
       index: 1,
+      account: 0,
+      change: 0,
     }
     const acc = await addAccount(password, newAccount)
     expect(acc).toStrictEqual({ ...newAccount, fav: false, createdAt: 123 })
@@ -97,6 +101,8 @@ describe('background: accounts', () => {
       crypto: 'DSM',
       address: 'new address',
       index: 1,
+      account: 0,
+      change: 0,
     }
     const acc = await addAccount(password, newAccount)
     expect(acc).toStrictEqual({
@@ -130,7 +136,7 @@ describe('background: accounts', () => {
   //   try {
   //     await addAccount(password, newAccount)
   //     expect(true).toBe(false)
-  //   } catch (err) {
+  //   } catch (err: any) {
   //     expect(err).toStrictEqual(new Error('wallet not found'))
   //   }
   // })
@@ -145,11 +151,13 @@ describe('background: accounts', () => {
       crypto: 'DSM',
       address: 'new address',
       index: 1,
+      account: 0,
+      change: 0,
     }
     try {
       await addAccount(password, newAccount)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -162,7 +170,12 @@ describe('background: accounts', () => {
     })
     ;(decryptStorage as jest.Mock).mockImplementation((a) => Promise.resolve(a))
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
-    const acc = await updateAccount(password, account.address, { name: 'new name' })
+    const acc = await updateAccount(
+      password,
+      account.address,
+      { name: 'new name' },
+      account.walletId
+    )
     expect(chrome.storage.local.set).toBeCalledWith(
       {
         accounts: JSON.stringify([{ ...account, name: 'new name' }]),
@@ -180,7 +193,7 @@ describe('background: accounts', () => {
     })
     ;(decryptStorage as jest.Mock).mockImplementation((a) => Promise.resolve(a))
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
-    const acc = await updateAccount(password, 'new address', { name: 'new name' })
+    const acc = await updateAccount(password, 'new address', { name: 'new name' }, account.walletId)
     expect(chrome.storage.local.set).toBeCalledWith(
       {
         accounts: JSON.stringify([account]),
@@ -195,9 +208,9 @@ describe('background: accounts', () => {
     })
     ;(decryptStorage as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
     try {
-      await updateAccount(password, account.address, { name: 'new name' })
+      await updateAccount(password, account.address, { name: 'new name' }, account.walletId)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })
@@ -211,7 +224,7 @@ describe('background: accounts', () => {
     ;(decryptStorage as jest.Mock).mockImplementation((a) => Promise.resolve(a))
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
 
-    const result = await deleteAccount(password, 'new address')
+    const result = await deleteAccount(password, 'new address', account.walletId)
     expect(chrome.storage.local.set).toBeCalledWith(
       {
         accounts: JSON.stringify([account]),
@@ -230,7 +243,7 @@ describe('background: accounts', () => {
     ;(decryptStorage as jest.Mock).mockImplementation((a) => Promise.resolve(a))
     ;(CryptoJS.AES.encrypt as jest.Mock).mockImplementationOnce((a) => a)
 
-    const result = await deleteAccount(password, account.address)
+    const result = await deleteAccount(password, account.address, account.walletId)
     expect(chrome.storage.local.remove).toBeCalledWith('accounts', expect.any(Function))
     expect(result).toStrictEqual({ success: true })
   })
@@ -240,9 +253,9 @@ describe('background: accounts', () => {
     })
     ;(decryptStorage as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
     try {
-      await deleteAccount(password, account.address)
+      await deleteAccount(password, account.address, account.walletId)
       expect(true).toBe(false)
-    } catch (err) {
+    } catch (err: any) {
       expect(err).toStrictEqual(new Error('incorrect password'))
     }
   })

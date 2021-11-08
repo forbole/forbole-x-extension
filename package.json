@@ -1,6 +1,6 @@
 {
   "name": "forbole-x-extension",
-  "version": "1.0.4",
+  "version": "1.1.1",
   "private": true,
   "dependencies": {
     "@cosmjs/crypto": "^0.25.1",

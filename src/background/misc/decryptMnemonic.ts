@@ -10,7 +10,7 @@ const decryptMnemonic = (encryptedMnemonic: string, securityPassword: string): P
         return reject(new Error('incorrect password'))
       }
       return resolve(mnemonic)
-    } catch (err) {
+    } catch (err: any) {
       return reject(new Error('incorrect password'))
     }
   })

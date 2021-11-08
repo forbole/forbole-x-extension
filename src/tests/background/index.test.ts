@@ -26,6 +26,8 @@ const account = {
   address: 'address',
   crypto: 'ATOM',
   index: 0,
+  account: 0,
+  change: 0,
   fav: false,
 }
 const password = '123123'
@@ -188,41 +190,53 @@ describe('background: handleMessages', () => {
   it('handles update account', async () => {
     ;(updateAccount as jest.Mock).mockResolvedValueOnce(account)
     await handleMessages(
-      { event: 'updateAccount', data: { password, account, address: account.address } },
+      {
+        event: 'updateAccount',
+        data: { password, account, address: account.address, walletId: account.walletId },
+      },
       undefined,
       sendResponse
     )
-    expect(updateAccount).toBeCalledWith(password, account.address, account)
+    expect(updateAccount).toBeCalledWith(password, account.address, account, account.walletId)
     expect(sendResponse).toBeCalledWith({ account })
   })
   it('handles update account with error', async () => {
     ;(updateAccount as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
     await handleMessages(
-      { event: 'updateAccount', data: { password, account, address: account.address } },
+      {
+        event: 'updateAccount',
+        data: { password, account, address: account.address, walletId: account.walletId },
+      },
       undefined,
       sendResponse
     )
-    expect(updateAccount).toBeCalledWith(password, account.address, account)
+    expect(updateAccount).toBeCalledWith(password, account.address, account, account.walletId)
     expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
   })
   it('handles delete account', async () => {
     ;(deleteAccount as jest.Mock).mockResolvedValueOnce({ success: true })
     await handleMessages(
-      { event: 'deleteAccount', data: { password, address: account.address } },
+      {
+        event: 'deleteAccount',
+        data: { password, address: account.address, walletId: account.walletId },
+      },
       undefined,
       sendResponse
     )
-    expect(deleteAccount).toBeCalledWith(password, account.address)
+    expect(deleteAccount).toBeCalledWith(password, account.address, account.walletId)
     expect(sendResponse).toBeCalledWith({ success: true })
   })
   it('handles delete wallet with error', async () => {
     ;(deleteAccount as jest.Mock).mockRejectedValueOnce(new Error('incorrect password'))
     await handleMessages(
-      { event: 'deleteAccount', data: { password, address: account.address } },
+      {
+        event: 'deleteAccount',
+        data: { password, address: account.address, walletId: account.walletId },
+      },
       undefined,
       sendResponse
     )
-    expect(deleteAccount).toBeCalledWith(password, account.address)
+    expect(deleteAccount).toBeCalledWith(password, account.address, account.walletId)
     expect(sendResponse).toBeCalledWith({ err: 'incorrect password' })
   })
   it('handles generate mnemonic', async () => {

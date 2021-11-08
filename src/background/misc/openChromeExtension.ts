@@ -1,7 +1,7 @@
 import qs from 'query-string'
 
 const openChromeExtension = (params: any) => {
-  const query: any = {}
+  const query: any = { fromWeb: true }
   Object.keys(params).forEach((key) => {
     if (typeof params[key] === 'string') {
       query[key] = params[key]
