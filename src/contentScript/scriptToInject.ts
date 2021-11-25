@@ -1,5 +1,5 @@
 ;(window as any).forboleX = {
-  sendTransaction: (password: string, address: string, transactionData: any) =>
+  sendTransaction: (password: string, address: string, transactionData: any, granter?: string) =>
     new Promise((resolve, reject) => {
       // Trigger background script to open chrome extension
       window.postMessage(
@@ -10,6 +10,7 @@
             password,
             address,
             transactionData,
+            granter,
           },
         },
         window.location.origin
