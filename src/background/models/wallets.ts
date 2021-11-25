@@ -4,18 +4,20 @@ import decryptMnemonic from '../misc/decryptMnemonic'
 import { Wallet, Account, CreateWalletParams } from '../../../types'
 import { addAccount } from './accounts'
 
-export const getWallets = (password: string): Promise<Omit<Wallet, 'mnemonic'>[]> =>
+export const getWallets = (password: string, raw?: boolean): Promise<Omit<Wallet, 'mnemonic'>[]> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['wallets'], async (result) => {
       try {
         const wallets = await decryptStorage<Wallet[]>(result.wallets, password)
         resolve(
-          (wallets || []).map((w: Wallet) => ({
-            name: w.name,
-            type: w.type,
-            id: w.id,
-            createdAt: w.createdAt,
-          }))
+          raw
+            ? wallets
+            : (wallets || []).map((w: Wallet) => ({
+                name: w.name,
+                type: w.type,
+                id: w.id,
+                createdAt: w.createdAt,
+              }))
         )
       } catch (err: any) {
         reject(err)
