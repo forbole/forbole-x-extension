@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Production
 on:
   push:
     branches:
@@ -15,7 +15,7 @@ jobs:
       - name: Run build
         run: yarn build
       - name: Zip build files
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
           files: build/
           dest: chrome-ext.zip
