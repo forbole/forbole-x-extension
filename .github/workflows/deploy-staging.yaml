@@ -1,0 +1,29 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Install modules
+        run: yarn
+      - name: Run build
+        run: yarn build:staging
+      - name: Zip build files
+        uses: papeloto/action-zip@v1
+        with:
+          files: build/
+          dest: chrome-ext.zip
+      - name: Upload to Google Web Store
+        uses: mnao305/chrome-extension-upload@2.2.0
+        with:
+          refresh-token: ${{ secrets.REFRESH_TOKEN }}
+          client-id: ${{ secrets.CLIENT_ID }}
+          file-path: chrome-ext.zip
+          extension-id: ${{ secrets.APP_ID_STAGING }}
+          publish: false

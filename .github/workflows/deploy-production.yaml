@@ -20,7 +20,7 @@ jobs:
           files: build/
           dest: chrome-ext.zip
       - name: Upload to Google Web Store
-        uses: mnao305/chrome-extension-upload@2.1.0
+        uses: mnao305/chrome-extension-upload@2.2.0
         with:
           refresh-token: ${{ secrets.REFRESH_TOKEN }}
           client-id: ${{ secrets.CLIENT_ID }}

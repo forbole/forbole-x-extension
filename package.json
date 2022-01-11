@@ -1,6 +1,6 @@
 {
   "name": "forbole-x-extension",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "dependencies": {
     "@cosmjs/crypto": "^0.25.1",
@@ -22,6 +22,7 @@
     "build-background": "webpack --config webpack.background.js",
     "build-content-script": "webpack --config webpack.contentScript.js",
     "build": "INLINE_RUNTIME_CHUNK=false react-scripts build && yarn build-background && yarn build-content-script",
+    "build:staging": "env-cmd -f ./.staging.env yarn build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prettier": "prettier --config .prettierrc --write '**/*.{ts,tsx,json,yaml}'",
@@ -57,6 +58,7 @@
     "@types/react-dom": "^16.9.8",
     "@typescript-eslint/eslint-plugin": "^4.11.1",
     "@typescript-eslint/parser": "^4.11.1",
+    "env-cmd": "^10.1.0",
     "eslint": "^7.17.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^7.2.0",
