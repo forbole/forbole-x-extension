@@ -12,8 +12,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Install modules
         run: yarn
+      - name: Replace .env File
+        run: mv .env.staging .env
       - name: Run build
-        run: yarn build:staging
+        run: yarn build
       - name: Zip build files
         uses: vimtor/action-zip@v1
         with:
