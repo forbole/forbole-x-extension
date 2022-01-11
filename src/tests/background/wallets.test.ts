@@ -161,6 +161,7 @@ describe('background: wallets', () => {
       createdAt: wallet.createdAt,
       id: wallet.id,
       name: 'new name',
+      type: wallet.type,
     })
   })
   it('handles update wallet security password', async () => {
@@ -188,6 +189,7 @@ describe('background: wallets', () => {
       createdAt: wallet.createdAt,
       id: wallet.id,
       name: wallet.name,
+      type: wallet.type,
     })
   })
   it('handles update wallet with incorrect id', async () => {
