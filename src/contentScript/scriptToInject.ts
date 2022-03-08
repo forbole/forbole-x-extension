@@ -1,4 +1,5 @@
 ;(window as any).forboleX = {
+  // Password field is kept for backward compatibility
   sendTransaction: (password: string, address: string, transactionData: any, granter?: string) =>
     new Promise((resolve, reject) => {
       // Trigger background script to open chrome extension
@@ -7,7 +8,6 @@
           target: 'Forbole X',
           event: 'sendTransaction',
           data: {
-            password,
             address,
             transactionData,
             granter,
