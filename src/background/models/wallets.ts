@@ -94,7 +94,7 @@ export const updateWallet = (
     securityPassword?: string
     newSecurityPassword?: string
   }
-): Promise<{ name: string; id: string; createdAt: number }> =>
+): Promise<{ name: string; id: string; createdAt: number; type: string }> =>
   new Promise((resolve, reject) =>
     chrome.storage.local.get(['wallets'], async (result) => {
       try {
@@ -125,6 +125,7 @@ export const updateWallet = (
             name: walletToBeUpdated.name,
             id: walletToBeUpdated.id,
             createdAt: walletToBeUpdated.createdAt,
+            type: walletToBeUpdated.type,
           })
         })
       } catch (err: any) {

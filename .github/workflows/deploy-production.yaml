@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Production
 on:
   push:
     branches:
@@ -15,12 +15,12 @@ jobs:
       - name: Run build
         run: yarn build
       - name: Zip build files
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
           files: build/
           dest: chrome-ext.zip
       - name: Upload to Google Web Store
-        uses: mnao305/chrome-extension-upload@2.1.0
+        uses: mnao305/chrome-extension-upload@2.2.0
         with:
           refresh-token: ${{ secrets.REFRESH_TOKEN }}
           client-id: ${{ secrets.CLIENT_ID }}
